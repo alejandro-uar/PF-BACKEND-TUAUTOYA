@@ -1,7 +1,7 @@
 import { Column, Entity, OneToMany, PrimaryColumn, PrimaryGeneratedColumn } from "typeorm";
 import { Cars } from "./cars.entity";
 import { Orders } from "./orders.entity";
-import { Roles } from "src/roles.enum";
+import { Roles } from "src/users/roles.enum";
 
 @Entity('users')
 export class Users{
@@ -15,8 +15,8 @@ export class Users{
   password: string
   @Column({type:"integer",nullable: false})
   identity: number
-  @Column({type:"varchar",length:50})
-  phone: string
+  @Column({type:"integer"})
+  phone: number
   @Column({type:"varchar",length:100})
   city: string
   @Column({

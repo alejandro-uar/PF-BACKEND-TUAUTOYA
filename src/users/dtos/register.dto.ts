@@ -1,6 +1,6 @@
 
 import { IsEmail, IsEnum, IsNotEmpty, IsString, Matches, MaxLength, MinLength } from "class-validator"
-import { Roles } from "src/roles.enum"
+import { Roles } from "src/users/roles.enum"
 
 export class CreateUserDTO{
   @IsNotEmpty()
@@ -23,7 +23,9 @@ export class CreateUserDTO{
 
   @IsNotEmpty()
   identity: number
-  phone: string
+
+  @IsNotEmpty()
+  phone: number
 
   @IsNotEmpty()
   @IsString()
