@@ -1,6 +1,7 @@
 import { Column, Entity, OneToMany, PrimaryColumn, PrimaryGeneratedColumn } from "typeorm";
 import { Cars } from "./cars.entity";
 import { Orders } from "./orders.entity";
+import { Roles } from "src/roles.enum";
 
 @Entity('users')
 export class Users{
@@ -18,8 +19,11 @@ export class Users{
   phone: string
   @Column({type:"varchar",length:100})
   city: string
-  @Column({type:"varchar",length:100})
-  role: boolean
+  @Column({
+    type: 'enum',
+    enum: Roles
+  })
+  role: string
 
   @OneToMany(()=>Cars,(car)=>car.users)
   cars: Cars[]
