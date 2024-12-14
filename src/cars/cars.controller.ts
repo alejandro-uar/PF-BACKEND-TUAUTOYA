@@ -16,6 +16,10 @@ export class CarsController {
   }
   
   //All data cars by id
+  @Get(':id')
+  async findByIdCar(@Param('id') id:string){
+    return await this.carsService.findCarsByIdService(id)
+  }
 
   //Create
   @Post()

@@ -19,6 +19,12 @@ export class CarsService {
         return cars
     }
 
+    async findCarsByIdService(id: string){
+        const car = await this.carsRepository.findOneBy({id: id})
+        if(!car) throw new NotFoundException("Vehiculo no encontrado")
+        return car            
+    }
+
     //Create car service
     async createCarsService(file: Express.Multer.File, dataCars: CreateCarDto){
         const uploadImg = await this.fileUploadRepository.uploadImg(file)
