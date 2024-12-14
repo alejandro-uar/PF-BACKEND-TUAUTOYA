@@ -6,16 +6,22 @@ import { OrderDetails } from "./orderDetails.entity";
 export class Cars{
   @PrimaryGeneratedColumn('uuid')
   id: string
+  
   @Column({type:"varchar",length:100})
   brand: string
+
   @Column({type:"varchar",length:100})
   model: string
-  @Column("integer")
-  year: number
-  @Column("integer")
-  pricePerDay: number
+
+  @Column("varchar")
+  year: string
+
+  @Column("varchar")
+  pricePerDay: string
+
   @Column({type:"varchar",length:255})
   image: string
+
   @Column("text")
   description: string
 
