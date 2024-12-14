@@ -1,8 +1,8 @@
-import { Body, Controller, FileTypeValidator, Get, MaxFileSizeValidator, ParseFilePipe, Post, UploadedFile, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Delete, FileTypeValidator, Get, MaxFileSizeValidator, Param, ParseFilePipe, Post, Put, UploadedFile, UseInterceptors } from '@nestjs/common';
 import { CarsService } from './cars.service';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { Express } from 'express';
-import { CreateCarDto } from './dtos/register.dto';
+import { CreateCarDto } from './dtos/cars.dto';
 
 
 @Controller('cars')
@@ -36,5 +36,12 @@ export class CarsController {
     @Body() cars: CreateCarDto
   ){
     return await this.carsService.createCarsService(file,cars)
+  }
+
+  
+  //Delete
+  @Delete(':id')
+  async deleteCar(@Param('id') id: string){
+    return await this.carsService.deleteCarService(id)
   }
 }

@@ -1,10 +1,10 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { FileUploadRepository } from './cars.repository';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Cars } from 'src/entities/cars.entity';
 import { Repository } from 'typeorm';
 import { Users } from 'src/entities/users.entity';
-import { CreateCarDto } from './dtos/register.dto';
+import { CreateCarDto } from './dtos/cars.dto';
 
 @Injectable()
 export class CarsService {
@@ -32,6 +32,23 @@ export class CarsService {
         })
 
         return await this.carsRepository.save(newCar);
+    }
+
+    //Updated car service
+    async updateCarService(id: string, data: any){
+        // const car = await this.carsRepository.findOneBy({id: id})
+        // if(!car) throw new NotFoundException("Vehiculo no encontrado")
+        // await this.carsRepository.update(id,data)
+        // return { message: 'Vehículo actualizado exitosamente' }
+        
+    }
+
+    //Delete car service
+    async deleteCarService(id: string){
+        const car = await this.carsRepository.findOneBy({id: id})
+        if(!car) throw new NotFoundException("Vehiculo no encontrado")
+        await this.carsRepository.remove(car)
+        return { message: 'Vehículo eliminado exitosamente' };
     }
 
 }
