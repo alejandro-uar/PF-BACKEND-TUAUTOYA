@@ -10,7 +10,7 @@ export default registerAs('typeorm', () => ({
   password: process.env.DB_PASSWORD,
   database: process.env.DB_NAME,
   entities: ['dist/**/*.entity{.ts,.js}'],
-  dropSchema: true,
+  dropSchema: false,
   logging: false,
   synchronize: true
 }));

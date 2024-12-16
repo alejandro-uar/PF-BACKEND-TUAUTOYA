@@ -18,4 +18,10 @@ export class CreateCarDto {
   description: string;
 
   image: File;
+
+  @IsString()
+  stock: string
+
+  @IsString()
+  userId: string
 }

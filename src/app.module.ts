@@ -5,6 +5,7 @@ import { UsersModule } from './users/users.module';
 import { OrdersModule } from './orders/orders.module';
 import { CarsModule } from './cars/cars.module';
 import { OrderDetailsModule } from './order-details/order-details.module';
+import { AuthModule } from './auth/auth.module';
 import typeormConfig from './config/typeorm.config';
 
 @Module({
@@ -20,6 +21,7 @@ import typeormConfig from './config/typeorm.config';
     OrdersModule,
     CarsModule,
     OrderDetailsModule,
+    AuthModule,
   ],
   controllers: [],
   providers: [],

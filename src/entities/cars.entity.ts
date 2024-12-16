@@ -25,6 +25,9 @@ export class Cars{
   @Column("text")
   description: string
 
+  @Column("varchar")
+  stock: string
+
   @ManyToOne(()=>Users,(user)=>user.cars)
   @JoinColumn()
   users: Users

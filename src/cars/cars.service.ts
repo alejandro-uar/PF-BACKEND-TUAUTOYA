@@ -10,12 +10,17 @@ import { CreateCarDto } from './dtos/cars.dto';
 export class CarsService {
     constructor(
         private fileUploadRepository: FileUploadRepository,
-        @InjectRepository(Cars) private readonly carsRepository: Repository<Cars>
+        @InjectRepository(Cars) private readonly carsRepository: Repository<Cars>,
+        @InjectRepository(Users) private readonly userRepository: Repository<Users>
     ){}
 
     //All cars services
     async allCarsService(){
-        const cars = await this.carsRepository.find()
+        const cars = await this.carsRepository.find({
+            relations:{
+                users: true
+            }
+        })
         return cars
     }
 
@@ -27,6 +32,8 @@ export class CarsService {
 
     //Create car service
     async createCarsService(file: Express.Multer.File, dataCars: CreateCarDto){
+        const user = await this.userRepository.findOneBy({id: dataCars.userId})
+        if(!user) throw new NotFoundException('Usuario no registrado') 
         const uploadImg = await this.fileUploadRepository.uploadImg(file)
         const newCar = this.carsRepository.create({
             brand: dataCars.brand,
@@ -34,9 +41,10 @@ export class CarsService {
             year: dataCars.model,
             pricePerDay: dataCars.pricePerDay,
             image: uploadImg.secure_url,
-            description: dataCars.description
+            description: dataCars.description,
+            stock: dataCars.stock,
+            users: user
         })
-
         return await this.carsRepository.save(newCar);
     }
 

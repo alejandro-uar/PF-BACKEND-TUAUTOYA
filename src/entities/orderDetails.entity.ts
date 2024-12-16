@@ -11,7 +11,7 @@ export class OrderDetails{
   @Column()
   endDate: Date
   @Column('decimal', { precision: 10, scale: 2 })
-  dailyPrice: number
+  price: number
   @Column('decimal', { precision: 10, scale: 2 })
   subtotal: number
 
@@ -21,5 +21,5 @@ export class OrderDetails{
 
   @ManyToOne(()=>Cars,(cars)=>cars.orderDetails)
   @JoinColumn()
-  cars: Cars
+  cars: Cars[]
 }
