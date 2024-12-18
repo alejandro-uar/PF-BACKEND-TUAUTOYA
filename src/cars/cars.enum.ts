@@ -5,3 +5,8 @@ export enum Fuels {
     Electric = "electric",
     Hybrid = 'hybrid'
 }
+
+export enum Transmissions {
+    Automatic = "automatic",
+    Manual = "manual"
+}
