@@ -1,6 +1,6 @@
 import { IsEnum, IsInt, IsNotEmpty, IsNumberString, IsOptional, IsString, IsUUID, MaxLength, MinLength } from "class-validator";
 import { OrderDetails } from "src/entities/orderDetails.entity";
-import { Fuels } from "../cars.enum";
+import { Fuels, Transmissions } from "../cars.enum";
 
 export class CreateCarDto {
 
@@ -37,9 +37,8 @@ export class CreateCarDto {
   @IsNotEmpty()
   description: string;
 
-  @IsString()
-  @IsNotEmpty()
-  transmission: string;
+  @IsEnum(Transmissions)
+  transmission: Transmissions;
 
   @IsEnum(Fuels)
   fuel: Fuels;
