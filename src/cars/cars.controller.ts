@@ -1,8 +1,6 @@
-import { Body, Controller, Delete, FileTypeValidator, Get, MaxFileSizeValidator, Param, ParseFilePipe, Post, Put, UploadedFile, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Query } from '@nestjs/common';
 import { CarsService } from './cars.service';
-import { FileInterceptor } from '@nestjs/platform-express';
-import { Express } from 'express';
-import { CreateCarDto } from './dtos/cars.dto';
+import { CreateCarDto, QueryCarDto } from './dtos/cars.dto';
 
 
 @Controller('cars')
@@ -11,8 +9,8 @@ export class CarsController {
   
   //All cars
   @Get()
-  async findCars(){
-    return await this.carsService.allCarsService()
+  async findCars(@Query() query: QueryCarDto){
+    return await this.carsService.allCarsService(query)
   }
   
   //All data cars by id
@@ -23,23 +21,10 @@ export class CarsController {
 
   //Create
   @Post()
-  @UseInterceptors(FileInterceptor('image'))
-  async uploadImg(@UploadedFile(
-    new ParseFilePipe({
-      validators:[
-        new MaxFileSizeValidator({
-          maxSize: 200000,
-          message: "File must be maximum 200kb"
-        }),
-        new FileTypeValidator({
-          fileType: /(jpg|jpeg|png|webp)$/
-        })
-      ]
-    })
-  ) file: Express.Multer.File,
+  async registerCar(
     @Body() cars: CreateCarDto
   ){
-    return await this.carsService.createCarsService(file,cars)
+    return await this.carsService.createCarsService(cars)
   }
 
   

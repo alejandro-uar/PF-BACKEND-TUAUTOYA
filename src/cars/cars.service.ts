@@ -2,9 +2,9 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { FileUploadRepository } from './cars.repository';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Cars } from 'src/entities/cars.entity';
-import { Repository } from 'typeorm';
+import { FindOneOptions, FindOptionsWhere, ILike, Repository, Or } from 'typeorm';
 import { Users } from 'src/entities/users.entity';
-import { CreateCarDto } from './dtos/cars.dto';
+import { CreateCarDto, QueryCarDto } from './dtos/cars.dto';
 
 @Injectable()
 export class CarsService {
@@ -15,12 +15,21 @@ export class CarsService {
     ){}
 
     //All cars services
-    async allCarsService(){
+    async allCarsService(queryDto: QueryCarDto){
+
+        const { brand = null, price = null } = queryDto;
+
         const cars = await this.carsRepository.find({
             relations:{
                 users: true
+            },
+            where: {
+                brand: ILike(brand || '%%'),
+                pricePerDay: ILike(price || '%%'),
+                // ...filters
             }
         })
+
         return cars
     }
 
@@ -31,20 +40,16 @@ export class CarsService {
     }
 
     //Create car service
-    async createCarsService(file: Express.Multer.File, dataCars: CreateCarDto){
+    async createCarsService(dataCars: CreateCarDto){
         const user = await this.userRepository.findOneBy({id: dataCars.userId})
+
         if(!user) throw new NotFoundException('Usuario no registrado') 
-        const uploadImg = await this.fileUploadRepository.uploadImg(file)
+
         const newCar = this.carsRepository.create({
-            brand: dataCars.brand,
-            model: dataCars.model,
-            year: dataCars.model,
-            pricePerDay: dataCars.pricePerDay,
-            image: uploadImg.secure_url,
-            description: dataCars.description,
-            stock: dataCars.stock,
+            ...dataCars,
             users: user
         })
+
         return await this.carsRepository.save(newCar);
     }
 
