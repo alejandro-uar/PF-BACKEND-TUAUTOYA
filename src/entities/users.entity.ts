@@ -7,21 +7,29 @@ import { Roles } from "src/users/roles.enum";
 export class Users{
   @PrimaryGeneratedColumn('uuid')
   id: string
-  @Column({type:"varchar",length:100})
+
+  @Column({ type: 'varchar', length: 255, nullable: false })
+  firebaseUid:string
+
+  @Column({type:"varchar",length:100, nullable: true})
   name: string
+
   @Column({type:"varchar",length:100, nullable:false, unique:true})
   email: string
-  @Column({type:"varchar",length:255})
-  password: string
-  @Column({type:"integer",nullable: false})
+
+  @Column({type:"integer",nullable: true})
   identity: number
-  @Column({type:"integer"})
+
+  @Column({type:"integer",nullable: true})
   phone: number
-  @Column({type:"varchar",length:100})
+
+  @Column({type:"varchar",length:100,nullable: true})
   city: string
+
   @Column({
     type: 'enum',
-    enum: Roles
+    enum: Roles,
+    nullable: true
   })
   role: string
 

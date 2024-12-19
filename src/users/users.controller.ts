@@ -16,9 +16,9 @@ export class UsersController {
       return await this.usersService.findByIdUserService(id)
     }
 
-    @Put(':id')
-    async updateUser(@Param('id') id:string, @Body() user: Partial<CreateUserDTO>){
-      return await this.usersService.updateUserService(id, user)
+    @Put()
+    async updateUser(@Body() user: Partial<CreateUserDTO>){
+      return await this.usersService.updateUserService(user)
     }
 
     @Delete(':id')

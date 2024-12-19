@@ -21,11 +21,11 @@ export class UsersService {
     return user
   }
 
-  async updateUserService(id:string, data: Partial<Users>){
-    const user = await this.userRepository.findOneBy({id: id})
-    if(!user) throw new NotFoundException('Usuario no encontrado!')
-    await this.userRepository.update(id, data)
-    return {message: "Datos actualizado con exito!"}
+  async updateUserService(data: Partial<Users>){
+    const user = await this.userRepository.findOne({where:{email:data.email}})
+    if(!user) throw new NotFoundException('Email invalido')
+    await this.userRepository.update(user.id, {...data})
+    return this.userRepository.findOneBy({id: user.id})
   }
 
   async deleteUserService(id: string){

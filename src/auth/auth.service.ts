@@ -1,47 +1,48 @@
-import { Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Users } from 'src/entities/users.entity';
-import { Repository } from 'typeorm';
-import * as bcrypt from "bcrypt"
-import { CreateUserDTO } from 'src/users/dtos/register.dto';
+import { Injectable, UnauthorizedException } from "@nestjs/common";
+import { FirebaseService } from "../firebase/firebase-admin.service";
+import { InjectRepository } from "@nestjs/typeorm";
+import { Repository } from "typeorm";
+import { Users } from "../entities/users.entity";
 
 @Injectable()
 export class AuthService {
   constructor(
-    @InjectRepository(Users) private readonly userRepository: Repository<Users>
-  ){}
+    private readonly firebaseService: FirebaseService,
+    @InjectRepository(Users) private readonly userRepository: Repository<Users>,
+  ) {}
 
-  async signin(email:string, password:string){
-    const user = await this.userRepository.findOneBy({email})
-    if(!user) throw new NotFoundException('Usuario no encontrado!')
-    const passwordMatch = await bcrypt.compare(password, user.password)
-    if(!passwordMatch){
-      throw new UnauthorizedException('Credenciales invalidas')
-  }
-  }
-
-  async signUp(data: CreateUserDTO) {
-    const user = await this.userRepository.findOneBy({ email: data.email });
-  
-    if (user) {
-      throw new NotFoundException('Usuario ya registrado!');
+  // Valida el token y registra/loguea al usuario
+  async validateUser(token: string): Promise<Users> {
+    if (!token) {
+      throw new UnauthorizedException("Token no proporcionado");
     }
-  
-    const newUser = new Users(); 
-    newUser.name = data.name;
-    newUser.email = data.email;
-    newUser.identity = data.identity;
-    newUser.phone = data.phone;
-    newUser.city = data.city;
-    newUser.role = data.role;
-  
-  
-    const hashedPassword = await bcrypt.hash(data.password, 10);
-    newUser.password = hashedPassword;
-  
-    const savedUser = await this.userRepository.save(newUser);
-    
-    return savedUser;
+
+    let decodedToken;
+    try {
+      // 1. Verificar el token con Firebase
+      decodedToken = await this.firebaseService.verifyToken(token);
+    } catch (error) {
+      throw new UnauthorizedException("Token inválido o expirado");
+    }
+
+    const { uid, email } = decodedToken; // Obtenemos UID y Email del token
+
+    if (!email) {
+      throw new UnauthorizedException("El token no contiene un email.");
+    }
+
+    // 2. Buscar el usuario en la base de datos
+    let user = await this.userRepository.findOne({ where: { firebaseUid: uid } });
+
+    // 3. Si no existe, registrar el usuario
+    if (!user) {
+      user = this.userRepository.create({
+        firebaseUid: uid,
+        email
+      });
+      await this.userRepository.save(user);
+    }
+
+    return user;
   }
-  
 }

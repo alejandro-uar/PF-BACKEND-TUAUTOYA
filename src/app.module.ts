@@ -7,10 +7,11 @@ import { CarsModule } from './cars/cars.module';
 import { OrderDetailsModule } from './order-details/order-details.module';
 import { AuthModule } from './auth/auth.module';
 import typeormConfig from './config/typeorm.config';
+import firebaseConfig from './config/firebase.config';
 
 @Module({
   imports: [
-    ConfigModule.forRoot({ isGlobal: true, load: [typeormConfig] }),
+    ConfigModule.forRoot({ isGlobal: true, load: [typeormConfig,firebaseConfig] }),
     TypeOrmModule.forRootAsync({
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => ({

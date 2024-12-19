@@ -1,38 +1,35 @@
 
-import { IsEmail, IsEnum, IsNotEmpty, IsString, Matches, MaxLength, MinLength } from "class-validator"
+import { IsEmail, IsEnum, IsNotEmpty, IsNumber, IsOptional, IsString, Matches, MaxLength, MinLength } from "class-validator"
 import { Roles } from "src/users/roles.enum"
 
 export class CreateUserDTO{
-  @IsNotEmpty()
   @IsString()
-  @MinLength(3)
-  @MaxLength(100)
-  name:string
+  @MaxLength(255)
+  firebaseUid: string;
 
-  @IsNotEmpty()
+  @IsOptional()
+  @IsString()
+  @MaxLength(100)
+  name: string;
+
   @IsEmail()
   @MaxLength(100)
-  email:string
+  email: string;
 
-  @IsNotEmpty()
-  @MaxLength(255)
-  @Matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*]).{8,}$/,{
-    message: "Password: Debe tener, mayuscula, minuscula, 0-9,!@#$%^&*"
-  })
-  password: string
+  @IsOptional()
+  @IsNumber()
+  identity: number;
 
-  @IsNotEmpty()
-  identity: number
+  @IsOptional()
+  @IsNumber()
+  phone: number;
 
-  @IsNotEmpty()
-  phone: number
-
-  @IsNotEmpty()
+  @IsOptional()
   @IsString()
   @MaxLength(100)
-  city: string
+  city: string;
 
-  @IsNotEmpty()
+  @IsOptional()
   @IsEnum(Roles)
-  role: Roles
+  role: Roles;
 }
