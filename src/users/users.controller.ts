@@ -1,6 +1,7 @@
-import { Body, Controller, Put, Delete, Get, Param } from '@nestjs/common';
+import { Body, Controller, Put, Delete, Get, Param, UseGuards } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDTO } from './dtos/register.dto';
+import { FirebaseAuthGuard } from 'src/guards/fireabase-auth.guard';
 
 @Controller('users')
 export class UsersController {

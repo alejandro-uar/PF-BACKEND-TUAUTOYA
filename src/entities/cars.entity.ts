@@ -36,12 +36,39 @@ export class Cars{
     type: 'enum',
     enum: Fuels
   })
-  fuel: Fuels
+  fuelType: Fuels
 
   @Column({
-    type: 'int'
+    type: 'varchar',
+    length: 20
   })
-  kilometers: number
+  mileage: string;
+
+  @Column({
+    type: 'varchar',
+    length: 50,
+    nullable: true
+  })
+  brakes: string;
+
+  @Column({
+    type: 'enum',
+    enum: ['Yes', 'No'],
+    default: 'No'
+  })
+  insurance: string;
+
+  @Column({
+    type: 'float',
+    default: 0
+  })
+  rating: number;
+
+  @Column({
+    type: 'varchar',
+    length: 50
+  })
+  status: string;
 
   @ManyToOne(()=>Users,(user)=>user.cars)
   @JoinColumn()

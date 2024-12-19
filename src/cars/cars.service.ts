@@ -17,7 +17,7 @@ export class CarsService {
     //All cars services
     async allCarsService(queryDto: QueryCarDto){
 
-        const { brand = null, price = null } = queryDto;
+        const { brand = null, price = null, year = null } = queryDto;
 
         const cars = await this.carsRepository.find({
             relations:{
@@ -26,6 +26,7 @@ export class CarsService {
             where: {
                 brand: ILike(brand || '%%'),
                 pricePerDay: ILike(price || '%%'),
+                year: ILike(year || '%%'),
                 // ...filters
             }
         })
@@ -53,15 +54,7 @@ export class CarsService {
         return await this.carsRepository.save(newCar);
     }
 
-    //Updated car service
-    async updateCarService(id: string, data: any){
-        // const car = await this.carsRepository.findOneBy({id: id})
-        // if(!car) throw new NotFoundException("Vehiculo no encontrado")
-        // await this.carsRepository.update(id,data)
-        // return { message: 'Vehículo actualizado exitosamente' }
-        
-    }
-
+    
     //Delete car service
     async deleteCarService(id: string){
         const car = await this.carsRepository.findOneBy({id: id})

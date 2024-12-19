@@ -4,9 +4,6 @@ import { Fuels, Transmissions } from "../cars.enum";
 
 export class CreateCarDto {
 
-  @IsUUID()
-  userId: string;
-
   @IsString()
   @IsNotEmpty()
   @MaxLength(100)
@@ -41,10 +38,29 @@ export class CreateCarDto {
   transmission: Transmissions;
 
   @IsEnum(Fuels)
-  fuel: Fuels;
+  fuelType: Fuels;
+
+  @IsString()
+  mileage: string;
+
+
+  @IsString()
+  @IsOptional()
+  brakes: string;
+
+  @IsEnum(['Yes', 'No'])
+  insurance: string;
 
   @IsInt()
-  kilometers: number;
+  @IsOptional()
+  rating: number;
+
+  @IsString()
+  @IsNotEmpty()
+  status: string;
+
+  @IsUUID()
+  userId: string;
 }
 
 
@@ -56,4 +72,8 @@ export class QueryCarDto {
   @IsString()
   @IsOptional()
   price: string;
+
+  @IsString()
+  @IsOptional()
+  year: string;
 }
