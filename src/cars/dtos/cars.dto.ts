@@ -1,6 +1,6 @@
-import { IsEnum, IsInt, IsNotEmpty, IsNumberString, IsOptional, IsString, IsUUID, MaxLength, MinLength } from "class-validator";
+import { IsEnum, IsInt, IsNotEmpty, IsNumber, IsNumberString, IsOptional, IsString, IsUUID, MaxLength, MinLength } from "class-validator";
 import { OrderDetails } from "src/entities/orderDetails.entity";
-import { Fuels, Transmissions } from "../cars.enum";
+import { Fuels, Status, Transmissions } from "../cars.enum";
 
 export class CreateCarDto {
 
@@ -20,10 +20,9 @@ export class CreateCarDto {
   @MaxLength(4)  // Un máximo de 4 caracteres (para el año)
   year: string;
 
-  @IsString()
+  @IsNumber()
   @IsNotEmpty()
-  @IsNumberString()  // Para validar que sea un número (como un precio)
-  pricePerDay: string;
+  pricePerDay: number;
 
   @IsString()
   @IsOptional()
@@ -41,23 +40,18 @@ export class CreateCarDto {
   fuelType: Fuels;
 
   @IsString()
-  mileage: string;
-
+  kilometer: string;
 
   @IsString()
   @IsOptional()
   brakes: string;
 
-  @IsEnum(['Yes', 'No'])
-  insurance: string;
-
   @IsInt()
   @IsOptional()
   rating: number;
 
-  @IsString()
-  @IsNotEmpty()
-  status: string;
+  @IsEnum(Status)
+  status: Status;
 
   @IsUUID()
   userId: string;

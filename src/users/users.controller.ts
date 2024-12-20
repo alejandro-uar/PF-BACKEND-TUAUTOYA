@@ -1,4 +1,4 @@
-import { Body, Controller, Put, Delete, Get, Param, UseGuards } from '@nestjs/common';
+import { Body, Controller, Put, Delete, Get, Param, UseGuards, Post } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDTO } from './dtos/register.dto';
 import { FirebaseAuthGuard } from 'src/guards/fireabase-auth.guard';
@@ -15,6 +15,11 @@ export class UsersController {
     @Get(':id')
     async findByIdUser(@Param('id') id: string){
       return await this.usersService.findByIdUserService(id)
+    }
+
+    @Post()
+    async createUser(@Body() user: Partial<CreateUserDTO>){
+      return await this.usersService.createUserService(user)
     }
 
     @Put()

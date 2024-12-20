@@ -3,9 +3,6 @@ import { IsEmail, IsEnum, IsNotEmpty, IsNumber, IsOptional, IsString, Matches, M
 import { Roles } from "src/users/roles.enum"
 
 export class CreateUserDTO{
-  @IsString()
-  @MaxLength(255)
-  firebaseUid: string;
 
   @IsOptional()
   @IsString()
@@ -21,8 +18,8 @@ export class CreateUserDTO{
   identity: number;
 
   @IsOptional()
-  @IsNumber()
-  phone: number;
+  @IsString()
+  phone: string;
 
   @IsOptional()
   @IsString()

@@ -20,8 +20,8 @@ export class AuthController {
       throw new UnauthorizedException('Token missing');
     }
 
-    res.cookie('access_token', token)
-
+    res.cookie('access_token', token);
+    
     const user = await this.authService.validateUser(token);
     
     res.json({ message: "Authenticated successfully", user, token })

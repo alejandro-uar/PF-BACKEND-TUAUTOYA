@@ -15,24 +15,41 @@ export class CarsService {
     ){}
 
     //All cars services
-    async allCarsService(queryDto: QueryCarDto){
-
-        const { brand = null, price = null, year = null } = queryDto;
-
-        const cars = await this.carsRepository.find({
-            relations:{
-                users: true
-            },
-            where: {
-                brand: ILike(brand || '%%'),
-                pricePerDay: ILike(price || '%%'),
-                year: ILike(year || '%%'),
-                // ...filters
-            }
-        })
-
-        return cars
+    async allCarsService(queryDto: QueryCarDto) {
+        const { brand, price, year } = queryDto;
+      
+        const query = this.carsRepository.createQueryBuilder('car')
+          .leftJoinAndSelect('car.users', 'user'); // Relación con 'users'
+      
+        if (brand) {
+          query.andWhere('car.brand ILIKE :brand', { brand: `%${brand}%` });
+        }
+      
+        if (price) {
+          const [minPrice, maxPrice] = price.split('-').map(Number); // Rango de precios
+          if (!isNaN(minPrice)) {
+            query.andWhere('car.pricePerDay >= :minPrice', { minPrice });
+          }
+          if (!isNaN(maxPrice)) {
+            query.andWhere('car.pricePerDay <= :maxPrice', { maxPrice });
+          }
+        }
+      
+        if (year) {
+          const [minYear, maxYear] = year.split('-').map(Number); // Rango de años
+          if (!isNaN(minYear)) {
+            query.andWhere('car.year >= :minYear', { minYear });
+          }
+          if (!isNaN(maxYear)) {
+            query.andWhere('car.year <= :maxYear', { maxYear });
+          }
+        }
+      
+        const cars = await query.getMany();
+      
+        return cars;
     }
+      
 
     async findCarsByIdService(id: string){
         const car = await this.carsRepository.findOneBy({id: id})
@@ -47,7 +64,18 @@ export class CarsService {
         if(!user) throw new NotFoundException('Usuario no registrado') 
 
         const newCar = this.carsRepository.create({
-            ...dataCars,
+            brand: dataCars.brand,
+            model: dataCars.model,
+            year: dataCars.year,
+            pricePerDay: dataCars.pricePerDay,
+            image: dataCars.image,
+            description: dataCars.description,
+            transmission: dataCars.transmission,
+            fuelType: dataCars.fuelType,
+            kilometer: dataCars.kilometer,
+            brakes: dataCars.brakes,
+            rating: dataCars.rating,
+            status: dataCars.status,
             users: user
         })
 

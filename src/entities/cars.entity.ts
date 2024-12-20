@@ -1,7 +1,7 @@
 import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import { Users } from "./users.entity";
 import { OrderDetails } from "./orderDetails.entity";
-import { Fuels, Transmissions } from "src/cars/cars.enum";
+import { Fuels, Status, Transmissions } from "src/cars/cars.enum";
 
 @Entity('cars')
 export class Cars{
@@ -17,8 +17,8 @@ export class Cars{
   @Column("varchar")
   year: string
 
-  @Column("varchar")
-  pricePerDay: string
+  @Column("integer")
+  pricePerDay: number
 
   @Column({type:"varchar",length:255, default: 'default.png'})
   image: string
@@ -42,7 +42,7 @@ export class Cars{
     type: 'varchar',
     length: 20
   })
-  mileage: string;
+  kilometer: string;
 
   @Column({
     type: 'varchar',
@@ -52,23 +52,17 @@ export class Cars{
   brakes: string;
 
   @Column({
-    type: 'enum',
-    enum: ['Yes', 'No'],
-    default: 'No'
-  })
-  insurance: string;
-
-  @Column({
     type: 'float',
     default: 0
   })
   rating: number;
 
   @Column({
-    type: 'varchar',
-    length: 50
+    type: 'enum',
+    enum: Status,
+    default: Status.Active
   })
-  status: string;
+  status: Status;
 
   @ManyToOne(()=>Users,(user)=>user.cars)
   @JoinColumn()

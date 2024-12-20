@@ -32,12 +32,11 @@ export class AuthService {
     }
 
     // 2. Buscar el usuario en la base de datos
-    let user = await this.userRepository.findOne({ where: { firebaseUid: uid } });
+    let user = await this.userRepository.findOne({ where: { email: email } });
 
     // 3. Si no existe, registrar el usuario
     if (!user) {
       user = this.userRepository.create({
-        firebaseUid: uid,
         email
       });
       await this.userRepository.save(user);

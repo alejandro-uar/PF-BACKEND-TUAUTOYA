@@ -21,6 +21,12 @@ export class UsersService {
     return user
   }
 
+  async createUserService(data: Partial<Users>){
+    const user = await this.userRepository.findOneBy({email: data.email})
+    if(user) throw new NotFoundException('Email ya registrado')
+    return await this.userRepository.save(data)
+  }
+
   async updateUserService(data: Partial<Users>){
     const user = await this.userRepository.findOne({where:{email:data.email}})
     if(!user) throw new NotFoundException('Email invalido')

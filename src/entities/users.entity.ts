@@ -8,9 +8,6 @@ export class Users{
   @PrimaryGeneratedColumn('uuid')
   id: string
 
-  @Column({ type: 'varchar', length: 255, nullable: false })
-  firebaseUid:string
-
   @Column({type:"varchar",length:100, nullable: true})
   name: string
 
@@ -20,8 +17,8 @@ export class Users{
   @Column({type:"integer",nullable: true})
   identity: number
 
-  @Column({type:"integer",nullable: true})
-  phone: number
+  @Column({type:"varchar",nullable: true})
+  phone: string
 
   @Column({type:"varchar",length:100,nullable: true})
   city: string
@@ -29,7 +26,7 @@ export class Users{
   @Column({
     type: 'enum',
     enum: Roles,
-    nullable: true
+    default: Roles.CUSTOMER
   })
   role: string
 

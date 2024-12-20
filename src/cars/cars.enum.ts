@@ -10,3 +10,8 @@ export enum Transmissions {
     Automatic = "automatic",
     Manual = "manual"
 }
+
+export enum Status {
+    Active = "active",
+    Inactive = "inactive"
+}
