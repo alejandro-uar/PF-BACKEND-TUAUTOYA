@@ -31,10 +31,8 @@ export class AuthService {
       throw new UnauthorizedException("El token no contiene un email.");
     }
 
-    // 2. Buscar el usuario en la base de datos
     let user = await this.userRepository.findOne({ where: { email: email } });
 
-    // 3. Si no existe, registrar el usuario
     if (!user) {
       user = this.userRepository.create({
         email
