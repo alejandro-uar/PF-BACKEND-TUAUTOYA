@@ -25,7 +25,7 @@ export class AuthService {
       throw new UnauthorizedException("Token inválido o expirado");
     }
 
-    const { uid, email } = decodedToken; // Obtenemos UID y Email del token
+    const { email } = decodedToken; //Email del token
 
     if (!email) {
       throw new UnauthorizedException("El token no contiene un email.");
