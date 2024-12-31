@@ -7,9 +7,10 @@ import { NestExpressApplication } from '@nestjs/platform-express';
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
   app.setGlobalPrefix('api/v1')
-  app.use(cookieParser('asdasdasd'))
+  app.use(cookieParser(process.env.COOKIE_SECRET));
   app.enableCors({
     origin: 'http://localhost:30001',
+    // origin: process.env.FRONTEND_URL ?? 'http://localhost:30001',
     methods: ['GET', 'POST', 'OPTIONS'],
     credentials: true,
   })
