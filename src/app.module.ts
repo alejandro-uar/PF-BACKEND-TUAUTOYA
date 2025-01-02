@@ -4,7 +4,6 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsersModule } from './users/users.module';
 import { OrdersModule } from './orders/orders.module';
 import { CarsModule } from './cars/cars.module';
-import { OrderDetailsModule } from './order-details/order-details.module';
 import { AuthModule } from './auth/auth.module';
 import typeormConfig from './config/typeorm.config';
 import firebaseConfig from './config/firebase.config';
@@ -21,7 +20,6 @@ import firebaseConfig from './config/firebase.config';
     UsersModule,
     OrdersModule,
     CarsModule,
-    OrderDetailsModule,
     AuthModule,
   ],
   controllers: [],
