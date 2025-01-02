@@ -1,6 +1,5 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Status } from 'src/cars/cars.enum';
 import { Cars } from 'src/entities/cars.entity';
 import { OrderDetails } from 'src/entities/orderDetails.entity';
 import { Orders } from 'src/entities/orders.entity';
@@ -37,60 +36,6 @@ export class OrdersService {
     })
     if (!order) throw new NotFoundException('Order no encontrada');
     return order
-  }
-
-  async addOrderService(userId: string, cars: any[], startDate: string, endDate: string){
-    const user = await this.userRepository.findOneBy({ id: userId });
-    if(!user) throw new NotFoundException('Usuario no encontrado');
-
-    const order = new Orders();
-    order.orderDate = new Date();
-    order.users = user;
-    const newOrder = await this.orderRepository.save(order);
-    let total = 0;
-
-    const carsArray: Cars[] = await Promise.all(
-      cars.map(async(element) => {
-        const car = await this.carRepository.findOneBy({ id: element.id });
-        if(!car || car.status !== Status.Active){
-          return null;
-        } 
-
-        const start = new Date(startDate);
-        const end = new Date(endDate);
-        const rentalDays = Math.ceil((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24));
-
-        if(rentalDays <= 0) throw new BadRequestException('Las fechas ingresadas no son validas');
-
-        const carTotal = rentalDays * Number(car.pricePerDay);
-        total += carTotal;
-
-        return { ...car, rentalDays, carTotal };
-      })
-    );
-
-    const filteredCars = carsArray.filter((car) => car !== null);
-    const orderDetail = new OrderDetails();
-    orderDetail.startDate = new Date(startDate);
-    orderDetail.endDate = new Date(endDate);
-    orderDetail.price = Number(total.toFixed(2));
-    orderDetail.subtotal = total;
-    orderDetail.cars = filteredCars;
-    orderDetail.order = newOrder;
-
-    await this.orderDetailsRepository.save(orderDetail);
-
-    newOrder.orderDetails = orderDetail;
-    await this.orderRepository.save(newOrder);
-
-    return this.orderRepository.findOne({
-      where: { id: newOrder.id },
-      relations: {
-        orderDetails: {
-          cars: true,
-        },
-      },
-    });
   }
 
   // async addOrderService(userId: string,cars:any, startDate:string, endDate:string){

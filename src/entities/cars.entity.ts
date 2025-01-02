@@ -1,9 +1,8 @@
-import { Column, Entity, Index, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import { Users } from "./users.entity";
 import { OrderDetails } from "./orderDetails.entity";
 import { Fuels, Status, Transmissions } from "src/cars/cars.enum";
 
-// @Index('car_brand_model', ['brand', 'model'])
 @Entity('cars')
 export class Cars{
   @PrimaryGeneratedColumn('uuid')
@@ -18,7 +17,7 @@ export class Cars{
   @Column("varchar")
   year: string
 
-  @Column("float")
+  @Column("integer")
   pricePerDay: number
 
   @Column({type:"varchar",length:255, default: 'default.png'})
@@ -70,6 +69,5 @@ export class Cars{
   users: Users
 
   @OneToMany(()=>OrderDetails,(ordDetails)=>ordDetails.cars)
-  @ManyToOne(() => OrderDetails, (ordDeatils)=> ordDeatils.cars)
   orderDetails: OrderDetails[]
 }

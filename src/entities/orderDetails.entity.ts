@@ -17,9 +17,9 @@ export class OrderDetails{
 
   @OneToOne(()=>Orders,(order)=>order.orderDetails)
   @JoinColumn()
-  order: Orders;
+  order: Orders
 
-  @ManyToOne(()=>Cars,(car)=>car.orderDetails)
+  @ManyToOne(()=>Cars,(cars)=>cars.orderDetails)
   @JoinColumn()
   cars: Cars[]
 }
