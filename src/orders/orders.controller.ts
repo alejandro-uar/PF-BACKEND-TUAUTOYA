@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post } from '@nestjs/common';
 import { OrdersService } from './orders.service';
 import { CreateOrderDTO } from './dtos/order.dto';
 
@@ -17,9 +17,13 @@ export class OrdersController {
   }
 
   @Post()
-  async createOrder(@Body() order: CreateOrderDTO){
-    const {usersId, cars, startDate, endDate} = order
-    // return await this.ordersService.addOrderService(usersId, cars, startDate, endDate)
-    return order
+  async addOrder(@Body() createOrderDto: CreateOrderDTO){
+    const { userId, cars, startDate, endDate } = createOrderDto;
+    return await this.ordersService.addOrder(userId, cars, startDate, endDate)
+  }
+
+  @Delete('id/cancel')
+  async cancelOrder(@Param('id') orderId:string){
+    return await this.ordersService.cancelOrder(orderId);
   }
 }

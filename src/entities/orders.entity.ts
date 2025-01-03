@@ -2,6 +2,12 @@ import { Column, Entity, ManyToOne, OneToOne, PrimaryGeneratedColumn } from "typ
 import { Users } from "./users.entity";
 import { OrderDetails } from "./orderDetails.entity";
 
+export enum OrderStatus{
+  Active = "active",
+  Completed = "completed",
+  Cancelled = "cancelled",
+}
+
 @Entity('orders')
 export class Orders{
   
@@ -9,7 +15,14 @@ export class Orders{
   id: string
   
   @Column()
-  orderDate: Date
+  orderDate: Date;
+
+  @Column({
+    type: 'enum',
+    enum: OrderStatus,
+    default: OrderStatus.Active,
+  })
+  status: OrderStatus;
 
   @ManyToOne(()=>Users,(user)=>user.order)
   users: Users

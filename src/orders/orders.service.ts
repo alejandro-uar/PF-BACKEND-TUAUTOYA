@@ -1,8 +1,9 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { Status } from 'src/cars/cars.enum';
 import { Cars } from 'src/entities/cars.entity';
 import { OrderDetails } from 'src/entities/orderDetails.entity';
-import { Orders } from 'src/entities/orders.entity';
+import { Orders, OrderStatus } from 'src/entities/orders.entity';
 import { Users } from 'src/entities/users.entity';
 import { Repository } from 'typeorm';
 
@@ -19,7 +20,12 @@ export class OrdersService {
   async allOrdersService(){
     const orders = await this.orderRepository.find({
       relations:{
-        orderDetails: true
+        orderDetails: {
+          cars: {
+            users:true
+          }
+        },
+        users: true
       }
     })
     return orders
@@ -38,116 +44,85 @@ export class OrdersService {
     return order
   }
 
-  // async addOrderService(userId: string,cars:any, startDate:string, endDate:string){
-  //   const user = await this.userRepository.findOneBy({id:userId})
-  //   if(!user) throw new NotFoundException('Usuario no encontrado')
-    
-  //   const order = new Orders()
-  //   order.orderDate = new Date()
-  //   order.users = user
+  async cancelOrder(orderId: string){
+    const order = await this.orderRepository.findOne({
+      where: { id: orderId },
+      relations: { orderDetails: {cars: true }},
+    });
 
-  //   const newOrder = await this.orderRepository.save(order)
+    if(!order) throw new NotFoundException('Orderno encontrada');
+    if(order.status !== OrderStatus.Active){
+      throw new BadRequestException('La orden no puede ser cancelada');
+    }
 
-  //   let total = 0
-  //   const carsArray = await Promise.all(
-  //     cars.map(async (element)=>{
-  //       const car = await this.carRepository.findOneBy({id: element.id})
-  //       if(parseInt(car.stock,10)<=0) return {message:"No hay stock"}
-  //       total+=Number(car.pricePerDay)
-  //       let newStock = Number(car.stock)-1
-  //       await this.carRepository.update(
-  //         {id: car.id},
-  //         {stock: newStock.toString()}
-  //       )
-  //       return car
-  //     })
-  //   )
-    
-  //   const orderDetail = new OrderDetails()
-  //   orderDetail.startDate = new Date(startDate)
-  //   orderDetail.endDate = new Date(endDate)
-  //   orderDetail.price = Number(Number(total).toFixed(2))
-  //   orderDetail.subtotal = Number(Number())
-  //   orderDetail.cars = carsArray
-  //   orderDetail.order = newOrder
-  //   await this.orderDetailsRepository.save(orderDetail)
+    order.status = OrderStatus.Cancelled;
+    await this.orderRepository.save(order);
 
-  //   newOrder.orderDetails = orderDetail
-  //   await this.orderRepository.save(newOrder)
+    const cars = order.orderDetails.cars;
+    if(cars && cars.length > 0){
+      for(const car of cars){
+        car.status = Status.Active;
+        await this.carRepository.save(car);
+      }
+    }
+    return `Orden con ID ${orderId} cancelada correctamente`;
 
-  //   return this.orderRepository.findOne({
-  //     where:{id: newOrder.id},
-  //     relations:{
-  //       orderDetails:{
-  //         cars: true
-  //       }
-  //     }
-  //   })
-  // }
+  }
 
-  // async addOrderService(userId: string, cars: any, startDate: string, endDate: string) {
-  //   // Buscar al usuario
-  //   const user = await this.userRepository.findOneBy({ id: userId });
-  //   if (!user) throw new NotFoundException('Usuario no encontrado');
+  async addOrder(userId: string, cars:{ id: string; rentalDays: number }[], startDate: string, endDate: string){
+    const user = await this.userRepository.findOne({ where: { id: userId }});
+    if(!user) throw new NotFoundException('Usuario no encontrado');
 
-  //   // Crear el nuevo pedido
-  //   const order = new Orders();
-  //   order.orderDate = new Date();
-  //   order.users = user;
+    const order = new Orders();
+    order.orderDate = new Date();
+    order.users = user;
+    const newOrder = await this.orderRepository.save(order);
 
-  //   // Guardar el pedido
-  //   const newOrder = await this.orderRepository.save(order);
+    let total = 0;
 
-  //   // Calcular el total
-  //   let total = 0;
-  //   const carsArray = await Promise.all(
-  //       cars.map(async (element) => {
-  //           const car = await this.carRepository.findOneBy({ id: element.id });
-  //           if (parseInt(car.stock, 10) <= 0) return { message: "No hay stock" };
+    const carDetails = await Promise.all(
+      cars.map(async(carData) => {
+        const car = await this.carRepository.findOne({ where:{ id: carData.id }});
+        if(!car) throw new NotFoundException(`El auto con el ID ${carData.id} no fue encontrado.`);
+        if(car.status !== 'active') throw new BadRequestException(`El auto con el ID ${carData.id} no esta disponible`);
 
-  //           //Calcular la canti dad de días de alquiler
-  //           const start = new Date(startDate);
-  //           const end = new Date(endDate);
-  //           const diffTime = Math.abs(end.getTime() - start.getTime());
-  //           const diffDays = Math.ceil(diffTime / (1000 * 3600 * 24)); // Días de alquiler
+        const rentalDays = carData.rentalDays;
+        const carTotal = rentalDays * car.pricePerDay;
 
-  //           //Calcular el total por el auto
-  //           total += Number (car.pricePerDay) * diffDays;
+        car.status = Status.Inactive;
+        await this.carRepository.save(car);
 
-  //           //Actualizar el stock
-  //           let newStock = parseInt(car.stock) - 1;
-  //           await this.carRepository.update(
-  //               { id: car.id },
-  //               { stock: newStock.toString() }
-  //           );
-  //           return car;
-  //       })  
-  //   );
+        total += carTotal;
+        return {
+          car,
+          rentalDays,
+          carTotal,
+        };
+      }),
+    );
 
-  //   // Crear detalles del pedido
-  //   const orderDetail = new OrderDetails();
-  //   orderDetail.startDate = new Date(startDate);
-  //   orderDetail.endDate = new Date(endDate);
-  //   orderDetail.price = Number(total.toFixed(2));  // Total calculado
-  //   orderDetail.subtotal = Number(total.toFixed(2));  // Subtotal es el mismo que el total
-  //   orderDetail.cars = carsArray;
-  //   orderDetail.order = newOrder;
+    // detalle de orden
+    const orderDetails = new OrderDetails();
+    orderDetails.startDate = new Date(startDate);
+    orderDetails.endDate = new Date(endDate);
+    orderDetails.price = total;
+    orderDetails.subtotal = total;
+    orderDetails.order = newOrder;
+    orderDetails.cars = carDetails.map((detail) => detail.car);
 
-  //   //Guardar los detalles del pedido
-  //   await this.orderDetailsRepository.save(orderDetail);
+    await this.orderDetailsRepository.save(orderDetails);
 
-  //   //Asociar los detalles del pedido con el pedido principal
-  //   newOrder.orderDetails = orderDetail;
-  //   await this.orderRepository.save(newOrder);
+    //asociar los detalles a la orden
+    newOrder.orderDetails = orderDetails;
+    await this.orderRepository.save(newOrder);
 
-  //   // // Retornar el pedido con sus detalles
-  //   return this.orderRepository.findOne({
-  //       where: { id: newOrder.id },
-  //       relations: {
-  //           orderDetails: {
-  //               cars: true
-  //           }
-  //       }
-  //   });
-  // }
+    return this.orderRepository.findOne({
+      where: {id: newOrder.id },
+      relations: {
+        orderDetails: {
+          cars: true,
+        },
+      },
+    });
+  }
 }
