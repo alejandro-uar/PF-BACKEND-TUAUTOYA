@@ -15,3 +15,9 @@ export enum Status {
     Active = "active",
     Inactive = "inactive"
 }
+
+export enum ApprovalStatus{
+    Pending = "pending",
+    Approved = "approved",
+    Rejected = "rejected"
+}

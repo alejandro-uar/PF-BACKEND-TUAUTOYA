@@ -1,6 +1,5 @@
-import { IsEnum, IsInt, IsNotEmpty, IsNumber, IsNumberString, IsOptional, IsString, IsUUID, MaxLength, MinLength } from "class-validator";
-import { OrderDetails } from "src/entities/orderDetails.entity";
-import { Fuels, Status, Transmissions } from "../cars.enum";
+import { IsEnum, IsInt, IsNotEmpty, IsNumber, IsOptional, IsString, IsUUID, MaxLength, MinLength } from "class-validator";
+import { ApprovalStatus, Fuels, Status, Transmissions } from "../cars.enum";
 
 export class CreateCarDto {
 
@@ -53,6 +52,10 @@ export class CreateCarDto {
   @IsEnum(Status)
   status: Status;
 
+  @IsEnum(ApprovalStatus)
+  @IsOptional()
+  approvalStatus: ApprovalStatus;
+
   @IsUUID()
   userId: string;
 }
@@ -70,4 +73,8 @@ export class QueryCarDto {
   @IsString()
   @IsOptional()
   year: string;
+
+  @IsEnum(ApprovalStatus)
+  @IsOptional()
+  approvalStatus: ApprovalStatus
 }

@@ -5,6 +5,7 @@ import { Cars } from 'src/entities/cars.entity';
 import { FindOneOptions, FindOptionsWhere, ILike, Repository, Or } from 'typeorm';
 import { Users } from 'src/entities/users.entity';
 import { CreateCarDto, QueryCarDto } from './dtos/cars.dto';
+import { ApprovalStatus } from './cars.enum';
 
 @Injectable()
 export class CarsService {
@@ -16,7 +17,7 @@ export class CarsService {
 
     //All cars services
     async allCarsService(queryDto: QueryCarDto) {
-        const { brand, price, year } = queryDto;
+        const { brand, price, year, approvalStatus } = queryDto;
       
         const query = this.carsRepository.createQueryBuilder('car')
           .leftJoinAndSelect('car.users', 'user'); // Relación con 'users'
@@ -43,6 +44,10 @@ export class CarsService {
           if (!isNaN(maxYear)) {
             query.andWhere('car.year <= :maxYear', { maxYear });
           }
+        }
+
+        if(approvalStatus){
+          query.andWhere('car.approvalStatus = :approvalStatus', { approvalStatus })
         }
       
         const cars = await query.getMany();
@@ -79,9 +84,22 @@ export class CarsService {
             users: user
         })
 
+        // const newCar = this.carsRepository.create({
+        //   ...dataCars,
+        //   users: user,
+        // });
+
         return await this.carsRepository.save(newCar);
     }
 
+    //Actualizar el estado de aprobacion de un vehiculo
+    async updateApprovalStatus(id: string, approvalStatus: ApprovalStatus){
+      const car = await this.carsRepository.findOneBy({ id });
+      if(!car) throw new NotFoundException('Vehiculo no encontrado');
+
+      car.approvalStatus = approvalStatus;
+      return await this.carsRepository.save(car)
+    }
     
     //Delete car service
     async deleteCarService(id: string){

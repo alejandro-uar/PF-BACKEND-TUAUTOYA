@@ -1,6 +1,7 @@
-import { Body, Controller, Delete, Get, Param, Post, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common';
 import { CarsService } from './cars.service';
 import { CreateCarDto, QueryCarDto } from './dtos/cars.dto';
+import { ApprovalStatus } from './cars.enum';
 
 
 @Controller('cars')
@@ -27,10 +28,18 @@ export class CarsController {
     return await this.carsService.createCarsService(cars)
   }
 
-  
   //Delete
   @Delete(':id')
   async deleteCar(@Param('id') id: string){
     return await this.carsService.deleteCarService(id)
+  }
+
+  //Update approval status
+  @Patch(':idapproval')
+  async updateApprovalStatus(
+    @Param('id') id: string,
+    @Body('approvalStatus') approvalStatus: ApprovalStatus
+  ){
+    return await this.carsService.updateApprovalStatus(id, approvalStatus);
   }
 }
