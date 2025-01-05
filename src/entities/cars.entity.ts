@@ -1,7 +1,7 @@
 import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import { Users } from "./users.entity";
 import { OrderDetails } from "./orderDetails.entity";
-import { Fuels, Status, Transmissions } from "src/cars/cars.enum";
+import { ApprovalStatus, Fuels, Status, Transmissions } from "src/cars/cars.enum";
 
 @Entity('cars')
 export class Cars{
@@ -63,6 +63,13 @@ export class Cars{
     default: Status.Active
   })
   status: Status;
+
+  @Column({
+    type: 'enum',
+    enum: ApprovalStatus,
+    default: ApprovalStatus.Pending
+  })
+  approvalStatus: ApprovalStatus
 
   @ManyToOne(()=>Users,(user)=>user.cars)
   @JoinColumn()

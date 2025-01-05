@@ -30,6 +30,9 @@ export class Users{
   })
   role: string
 
+  @Column({ type: 'boolean', default: true })
+  isEnabled: boolean;
+
   @OneToMany(()=>Cars,(car)=>car.users)
   cars: Cars[]
 

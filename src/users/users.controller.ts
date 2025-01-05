@@ -31,5 +31,15 @@ export class UsersController {
     async deleteUser(@Param('id') id:string){
       return await this.usersService.deleteUserService(id)
     }
+
+    @Put(':id/block')
+    async blockUser(@Param('id') id: string){
+      return await this.usersService.blockUserService(id);
+    }
+
+    @Put(':id/enable')
+    async enableUser(@Param('id') id: string){
+      return await this.usersService.enableUserService(id);
+    }
     
 }

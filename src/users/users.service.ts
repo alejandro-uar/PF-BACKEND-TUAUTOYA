@@ -42,4 +42,20 @@ export class UsersService {
     
   }
 
+  async blockUserService(id: string){
+    const user = await this.userRepository.findOneBy({ id: id });
+    if(!user) throw new NotFoundException('Usuario no encontrado');
+
+    user.isEnabled = false;
+    return this.userRepository.save(user);
+  }
+
+  async enableUserService(id: string){
+    const user = await this.userRepository.findOneBy({ id: id });
+    if(!user) throw new NotFoundException('Usuario no encontrado');
+
+    user.isEnabled = true;
+    return this.userRepository.save(user);
+  }
+
 }
