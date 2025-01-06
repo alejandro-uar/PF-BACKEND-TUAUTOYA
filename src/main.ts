@@ -20,10 +20,11 @@ async function bootstrap() {
 
   app.use(cookieParser('asdasdasd'))
   app.enableCors({
-    origin: '*',
-    methods: ['GET', 'POST', 'PUT', 'DELETE','PATCH','OPTIONS'],
-    credentials: true,
-  })
+    origin: ['http://localhost:3001'], // Especifica el dominio del frontend
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+    credentials: true, // Permite cookies y cabeceras de autorización
+  });
+  
     
   app.useGlobalPipes(new ValidationPipe({
     transform: true,
