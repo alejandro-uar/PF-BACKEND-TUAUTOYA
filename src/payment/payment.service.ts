@@ -37,7 +37,7 @@ export class PaymentService {
             success: 'http://localhost:3000/payments/success',
             failure: 'http://localhost:3000/payments/failure',
           },
-          notification_url: 'https://d767-2803-9800-9400-4b56-91e4-e2fe-a075-671.ngrok-free.app/payments/webhook',
+          notification_url: 'https://pf-backend-tuautoya.onrender.com/payments/webhook',
           metadata: {
             orderId, // Asociar la orden al pago.
           },
