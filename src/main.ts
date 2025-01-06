@@ -19,12 +19,12 @@ async function bootstrap() {
   SwaggerModule.setup('api-docs', app, document) // http://localhost:3000/api-docs
 
   app.use(cookieParser('asdasdasd'))
-  app.enableCors({
-    origin: ['http://localhost:3001'], // Especifica el dominio del frontend
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-    credentials: true, // Permite cookies y cabeceras de autorización
-  });
   
+  app.enableCors({
+    origin: 'http://localhost:3001',
+    methods: ['GET', 'POST', 'PUT', 'DELETE','PATCH'],
+    credentials: true,
+  })
     
   app.useGlobalPipes(new ValidationPipe({
     transform: true,
