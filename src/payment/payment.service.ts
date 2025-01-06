@@ -9,12 +9,11 @@ export class PaymentService {
 
     constructor() {
         this.client = new MercadoPagoConfig({
-            accessToken: 'APP_USR-5976021530382355-122723-d603fd42721967e8b1ebbfe9d13be43e-2183370688', // Tu Access Token de sandbox
+            accessToken: process.env.ACCESS_TOKEN_MERCADO_PAGO, // Tu Access Token de sandbox
             options: {
                 timeout: 5000,
             }
         });
-
 
         this.payment = new Payment(this.client);
         this.preference = new Preference(this.client)
