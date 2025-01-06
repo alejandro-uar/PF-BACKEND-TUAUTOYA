@@ -5,6 +5,7 @@ import { Cars } from 'src/entities/cars.entity';
 import { OrderDetails } from 'src/entities/orderDetails.entity';
 import { Orders, OrderStatus } from 'src/entities/orders.entity';
 import { Users } from 'src/entities/users.entity';
+import { PaymentService } from 'src/payment/payment.service';
 import { Repository } from 'typeorm';
 
 @Injectable()
@@ -14,7 +15,8 @@ export class OrdersService {
     @InjectRepository(Orders) private readonly orderRepository: Repository<Orders>,
     @InjectRepository(Users) private readonly userRepository: Repository<Users>,
     @InjectRepository(Cars) private readonly carRepository: Repository<Cars>,
-    @InjectRepository(OrderDetails) private readonly orderDetailsRepository: Repository<OrderDetails>
+    @InjectRepository(OrderDetails) private readonly orderDetailsRepository: Repository<OrderDetails>,
+    private readonly mercadoPagoService: PaymentService,
   ){}
 
   async allOrdersService(){
@@ -69,60 +71,152 @@ export class OrdersService {
 
   }
 
-  async addOrder(userId: string, cars:{ id: string; rentalDays: number }[], startDate: string, endDate: string){
-    const user = await this.userRepository.findOne({ where: { id: userId }});
-    if(!user) throw new NotFoundException('Usuario no encontrado');
-
-    const order = new Orders();
-    order.orderDate = new Date();
-    order.users = user;
-    const newOrder = await this.orderRepository.save(order);
-
-    let total = 0;
-
-    const carDetails = await Promise.all(
-      cars.map(async(carData) => {
-        const car = await this.carRepository.findOne({ where:{ id: carData.id }});
-        if(!car) throw new NotFoundException(`El auto con el ID ${carData.id} no fue encontrado.`);
-        if(car.status !== 'active') throw new BadRequestException(`El auto con el ID ${carData.id} no esta disponible`);
-
-        const rentalDays = carData.rentalDays;
-        const carTotal = rentalDays * car.pricePerDay;
-
-        car.status = Status.Inactive;
-        await this.carRepository.save(car);
-
-        total += carTotal;
-        return {
-          car,
-          rentalDays,
-          carTotal,
-        };
-      }),
+  async updateOrderStatus(orderId: string, status: string) {
+    const result = await this.orderRepository.update(
+      { id: orderId },
+      { paymentStatus: status }
     );
-
-    // detalle de orden
-    const orderDetails = new OrderDetails();
-    orderDetails.startDate = new Date(startDate);
-    orderDetails.endDate = new Date(endDate);
-    orderDetails.price = total;
-    orderDetails.subtotal = total;
-    orderDetails.order = newOrder;
-    orderDetails.cars = carDetails.map((detail) => detail.car);
-
-    await this.orderDetailsRepository.save(orderDetails);
-
-    //asociar los detalles a la orden
-    newOrder.orderDetails = orderDetails;
-    await this.orderRepository.save(newOrder);
-
-    return this.orderRepository.findOne({
-      where: {id: newOrder.id },
-      relations: {
-        orderDetails: {
-          cars: true,
-        },
-      },
-    });
+  
+    if (result.affected === 0) {
+      throw new NotFoundException('Orden no encontrada');
+    }
+  
+    return this.orderRepository.findOne({ where: { id: orderId } });
   }
+  
+
+//   //Create Order
+//   async addOrder(userId: string, cars: { id: string; rentalDays: number }[], startDate: string, endDate: string) {
+//     const user = await this.userRepository.findOne({ where: { id: userId } });
+//     if (!user) throw new NotFoundException('Usuario no encontrado');
+
+//     const order = new Orders();
+//     order.orderDate = new Date();
+//     order.users = user;
+//     const newOrder = await this.orderRepository.save(order);
+
+//     let total = 0;
+
+//     const carDetails = await Promise.all(
+//         cars.map(async (carData) => {
+//             const car = await this.carRepository.findOne({ where: { id: carData.id } });
+//             if (!car) throw new NotFoundException(`El auto con el ID ${carData.id} no fue encontrado.`);
+//             if (car.status !== 'active') throw new BadRequestException(`El auto con el ID ${carData.id} no está disponible`);
+
+//             const rentalDays = carData.rentalDays;
+//             const carTotal = rentalDays * car.pricePerDay;
+
+//             car.status = Status.Inactive;
+//             await this.carRepository.save(car);
+
+//             total += carTotal;
+//             return {
+//                 car,
+//                 rentalDays,
+//                 carTotal,
+//             };
+//         }),
+//     );
+
+//     const orderDetails = new OrderDetails();
+//     orderDetails.startDate = new Date(startDate);
+//     orderDetails.endDate = new Date(endDate);
+//     orderDetails.price = total;
+//     orderDetails.subtotal = total;
+//     orderDetails.order = newOrder;
+//     orderDetails.cars = carDetails.map((detail) => detail.car);
+
+//     await this.orderDetailsRepository.save(orderDetails);
+
+//     newOrder.orderDetails = orderDetails;
+//     await this.orderRepository.save(newOrder);
+
+//     // Crear preferencia en Mercado Pago
+//     const paymentPreference = await this.mercadoPagoService.createPreference(total, order.id);
+
+//     return {
+//         orderId: newOrder.id,
+//         paymentLink: paymentPreference.init_point,
+//     };
+// }
+
+async addOrder(
+  userId: string,
+  cars: { id: string; rentalDays: number }[],
+  startDate: string,
+  endDate: string
+) {
+  // Obtener usuario
+  const user = await this.userRepository.findOne({ where: { id: userId } });
+  if (!user) throw new NotFoundException('Usuario no encontrado');
+
+  let total = 0;
+
+  // Validar y procesar los autos
+  const carDetails = await Promise.all(
+    cars.map(async (carData) => {
+      const car = await this.carRepository.findOne({ where: { id: carData.id } });
+      if (!car) throw new NotFoundException(`El auto con el ID ${carData.id} no fue encontrado.`);
+      if (car.status !== 'active')
+        throw new BadRequestException(`El auto con el ID ${carData.id} no está disponible`);
+
+      const rentalDays = carData.rentalDays;
+      const carTotal = rentalDays * car.pricePerDay;
+
+      total += carTotal;
+
+      return {
+        car,
+        rentalDays,
+        carTotal,
+      };
+    })
+  );
+
+  // Crear nueva orden
+  const order = new Orders();
+  order.orderDate = new Date();
+  order.users = user;
+  const newOrder = await this.orderRepository.save(order);
+
+  // Actualizar estado de los autos usando QueryBuilder
+  await Promise.all(
+    carDetails.map(async (detail) => {
+      await this.carRepository
+        .createQueryBuilder()
+        .update(Cars) // Asegúrate de que "Car" sea el nombre correcto de tu entidad
+        .set({ status: Status.Inactive }) // Utilizando el enum Status o el valor de cadena correspondiente
+        .where('id = :id', { id: detail.car.id }) // Asegúrate de que detail.car.id tenga el valor correcto
+        .execute();
+    })
+  );
+
+  // // Crear detalles de la orden
+  // const orderDetails = new OrderDetails();
+  // orderDetails.startDate = new Date(startDate);
+  // orderDetails.endDate = new Date(endDate);
+  // orderDetails.price = total;
+  // orderDetails.subtotal = total;
+  // orderDetails.order = newOrder;
+  // orderDetails.cars = carDetails.map((detail) => detail.car);
+
+  // // Guardar detalles de la orden
+  // const savedOrderDetails = await this.orderDetailsRepository.save(orderDetails);
+
+  // // Asociar detalles a la orden
+  // newOrder.orderDetails = savedOrderDetails;
+  // await this.orderRepository.save(newOrder);
+
+  // Crear preferencia en Mercado Pago
+  const paymentPreference = await this.mercadoPagoService.createPreference(total, newOrder.id);
+
+  // Retornar resultado
+  return {
+    orderId: newOrder.id,
+    paymentLink: paymentPreference.init_point,
+  };
+}
+
+
+
 }

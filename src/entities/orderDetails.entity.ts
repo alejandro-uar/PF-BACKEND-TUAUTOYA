@@ -16,7 +16,6 @@ export class OrderDetails{
   subtotal: number
 
   @OneToOne(()=>Orders,(order)=>order.orderDetails)
-  @JoinColumn()
   order: Orders
 
   @ManyToOne(()=>Cars,(cars)=>cars.orderDetails)

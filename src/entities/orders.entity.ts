@@ -1,4 +1,4 @@
-import { Column, Entity, ManyToOne, OneToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, JoinColumn, ManyToOne, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 import { Users } from "./users.entity";
 import { OrderDetails } from "./orderDetails.entity";
 
@@ -24,9 +24,13 @@ export class Orders{
   })
   status: OrderStatus;
 
+  @Column({default: 'PENDING'})
+  paymentStatus: string;
+
   @ManyToOne(()=>Users,(user)=>user.order)
   users: Users
 
   @OneToOne(()=>OrderDetails,(ordDetails)=>ordDetails.order)
+  @JoinColumn()
   orderDetails: OrderDetails
 }
