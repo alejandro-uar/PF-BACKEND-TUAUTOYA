@@ -76,5 +76,5 @@ export class QueryCarDto {
 
   @IsEnum(ApprovalStatus)
   @IsOptional()
-  approvalStatus: ApprovalStatus
+  approvalStatus: ApprovalStatus;
 }

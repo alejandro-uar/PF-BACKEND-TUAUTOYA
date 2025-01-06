@@ -1,7 +1,8 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common';
 import { CarsService } from './cars.service';
-import { CreateCarDto, QueryCarDto } from './dtos/cars.dto';
 import { ApprovalStatus } from './cars.enum';
+import { CreateCarDto, QueryCarDto } from '../cars/dtos/cars.dto';
+
 
 
 @Controller('cars')
