@@ -13,6 +13,14 @@ export class CreateUserDTO{
   @MaxLength(100)
   email: string;
 
+  @MinLength(8, { message: 'La contraseña debe tener al menos 8 caracteres.' })
+  @MaxLength(15, { message: 'La contraseña no debe tener más de 15 caracteres.' })
+  @Matches(/[a-z]/, { message: 'La contraseña debe contener al menos una letra minúscula.' })
+  @Matches(/[A-Z]/, { message: 'La contraseña debe contener al menos una letra mayúscula.' })
+  @Matches(/\d/, { message: 'La contraseña debe contener al menos un número.' })
+  @Matches(/[!@#$%^&]/, { message: 'La contraseña debe contener al menos un carácter especial (!@#$%^&).' })
+  password:string;
+
   @IsOptional()
   @IsNumber()
   identity: number;

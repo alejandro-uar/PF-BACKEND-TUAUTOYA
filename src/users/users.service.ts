@@ -12,7 +12,7 @@ export class UsersService {
 
   async findUserService(){
     const user = await this.userRepository.find()
-    return user
+    return user.map(({password, ...userNoPassword}) => userNoPassword)
   }
 
   async findByIdUserService(id: string){
@@ -24,7 +24,9 @@ export class UsersService {
   async createUserService(data: Partial<Users>){
     const user = await this.userRepository.findOneBy({email: data.email})
     if(user) throw new NotFoundException('Email ya registrado')
-    return await this.userRepository.save(data)
+    const newUser = await this.userRepository.save(data);
+    const {password, ...userNoPassword} = newUser;
+    return userNoPassword;
   }
 
   async updateUserService(data: Partial<Users>){

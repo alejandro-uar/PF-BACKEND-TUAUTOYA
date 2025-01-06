@@ -2,6 +2,7 @@ import { Column, Entity, OneToMany, PrimaryColumn, PrimaryGeneratedColumn } from
 import { Cars } from "./cars.entity";
 import { Orders } from "./orders.entity";
 import { Roles } from "src/users/roles.enum";
+// import { AccountStatement } from "./accountStatement.entity";
 
 @Entity('users')
 export class Users{
@@ -13,6 +14,9 @@ export class Users{
 
   @Column({type:"varchar",length:100, nullable:false, unique:true})
   email: string
+
+  @Column({type:'varchar',length:128, nullable:false,})
+  password:string;
 
   @Column({type:"integer",nullable: true})
   identity: number
@@ -38,4 +42,7 @@ export class Users{
 
   @OneToMany(()=>Orders,(order)=>order.users)
   order: Orders[]
+
+  // @OneToMany(() => AccountStatement, (AccountStatement) => AccountStatement.user)
+  // accountStatements: AccountStatement[];
 }
