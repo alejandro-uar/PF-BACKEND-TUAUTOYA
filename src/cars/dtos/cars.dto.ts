@@ -3,6 +3,7 @@ import { ApprovalStatus, Fuels, Status, Transmissions } from "../cars.enum";
 
 export class CreateCarDto {
 
+  
   @IsString()
   @IsNotEmpty()
   @MaxLength(100)
