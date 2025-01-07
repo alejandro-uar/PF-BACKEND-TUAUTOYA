@@ -1,4 +1,4 @@
-import { Column, Entity, OneToMany, PrimaryColumn, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import { Cars } from "./cars.entity";
 import { Orders } from "./orders.entity";
 import { Roles } from "src/users/roles.enum";

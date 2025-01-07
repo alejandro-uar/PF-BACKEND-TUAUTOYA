@@ -191,22 +191,6 @@ async addOrder(
     })
   );
 
-  // // Crear detalles de la orden
-  // const orderDetails = new OrderDetails();
-  // orderDetails.startDate = new Date(startDate);
-  // orderDetails.endDate = new Date(endDate);
-  // orderDetails.price = total;
-  // orderDetails.subtotal = total;
-  // orderDetails.order = newOrder;
-  // orderDetails.cars = carDetails.map((detail) => detail.car);
-
-  // // Guardar detalles de la orden
-  // const savedOrderDetails = await this.orderDetailsRepository.save(orderDetails);
-
-  // // Asociar detalles a la orden
-  // newOrder.orderDetails = savedOrderDetails;
-  // await this.orderRepository.save(newOrder);
-
   // Crear preferencia en Mercado Pago
   const paymentPreference = await this.mercadoPagoService.createPreference(total, newOrder.id);
 
