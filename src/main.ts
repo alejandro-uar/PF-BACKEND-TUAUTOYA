@@ -9,14 +9,14 @@ async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
 
   const config = new DocumentBuilder()
-    .setTitle('Api-docs/TuAutoYa')
-    .setDescription('Servicio de rentabilidad de autos')
+    .setTitle('Cats example')
+    .setDescription('The cats API description')
     .setVersion('1.0')
+    .addTag('cats')
     .build();
-  
-  const document = SwaggerModule.createDocument(app, config);
 
-  SwaggerModule.setup('api-docs', app, document) // http://localhost:3000/api-docs
+  const documentFactory = () => SwaggerModule.createDocument(app, config);
+  SwaggerModule.setup('api-docs', app, documentFactory);
 
   app.use(cookieParser('asdasdasd'))
   
