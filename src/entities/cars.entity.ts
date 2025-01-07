@@ -1,80 +1,56 @@
 import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import { Users } from "./users.entity";
-import { OrderDetails } from "./orderDetails.entity";
+import { Orders } from "./orders.entity";
 import { ApprovalStatus, Fuels, Status, Transmissions } from "src/cars/cars.enum";
 
 @Entity('cars')
-export class Cars{
+export class Cars {
   @PrimaryGeneratedColumn('uuid')
-  id: string
-  
-  @Column({type:"varchar",length:100})
-  brand: string
+  id: string;
 
-  @Column({type:"varchar",length:100})
-  model: string
+  @Column({ type: "varchar", length: 100 })
+  brand: string;
+
+  @Column({ type: "varchar", length: 100 })
+  model: string;
 
   @Column("varchar")
-  year: string
+  year: string;
 
   @Column("integer")
-  pricePerDay: number
+  pricePerDay: number;
 
-  @Column({type:"varchar",length:255, default: 'default.png'})
-  image: string
+  @Column({ type: "varchar", length: 255, default: 'default.png' })
+  image: string;
 
   @Column("text")
-  description: string
+  description: string;
 
-  @Column({
-    type: 'enum',
-    enum: Transmissions
-  })
-  transmission: Transmissions
+  @Column({ type: 'enum', enum: Transmissions })
+  transmission: Transmissions;
 
-  @Column({
-    type: 'enum',
-    enum: Fuels
-  })
-  fuelType: Fuels
+  @Column({ type: 'enum', enum: Fuels })
+  fuelType: Fuels;
 
-  @Column({
-    type: 'varchar',
-    length: 20
-  })
+  @Column({ type: 'varchar', length: 20 })
   kilometer: string;
 
-  @Column({
-    type: 'varchar',
-    length: 50,
-    nullable: true
-  })
+  @Column({ type: 'varchar', length: 50, nullable: true })
   brakes: string;
 
-  @Column({
-    type: 'float',
-    default: 0
-  })
+  @Column({ type: 'float', default: 0 })
   rating: number;
 
-  @Column({
-    type: 'enum',
-    enum: Status,
-    default: Status.Active
-  })
+  @Column({ type: 'enum', enum: Status, default: Status.Active })
   status: Status;
 
-  @Column({
-    type: 'enum',
-    enum: ApprovalStatus,
-    default: ApprovalStatus.Pending
-  })
-  approvalStatus: ApprovalStatus
+  @Column({ type: 'enum', enum: ApprovalStatus, default: ApprovalStatus.Pending })
+  approvalStatus: ApprovalStatus;
 
-  @ManyToOne(()=>Users,(user)=>user.cars)
+  @ManyToOne(() => Users, (user) => user.cars)
   @JoinColumn()
-  users: Users
+  users: Users;
 
-  @OneToMany(()=>OrderDetails,(ordDetails)=>ordDetails.cars)
-  orderDetails: OrderDetails[]
+  @OneToMany(() => Orders, (order) => order.cars)
+  orders: Orders[];
 }

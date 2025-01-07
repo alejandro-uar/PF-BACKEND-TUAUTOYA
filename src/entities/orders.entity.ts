@@ -1,6 +1,7 @@
-import { Column, Entity, JoinColumn, ManyToOne, OneToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 import { Users } from "./users.entity";
-import { OrderDetails } from "./orderDetails.entity";
+import { Cars } from "./cars.entity";
+
 
 export enum OrderStatus{
   Active = "active",
@@ -9,28 +10,37 @@ export enum OrderStatus{
 }
 
 @Entity('orders')
-export class Orders{
-  
+export class Orders {
   @PrimaryGeneratedColumn('uuid')
-  id: string
-  
+  id: string;
+
   @Column()
   orderDate: Date;
 
-  @Column({
-    type: 'enum',
-    enum: OrderStatus,
-    default: OrderStatus.Active,
-  })
+  @Column({ type: 'enum', enum: OrderStatus, default: OrderStatus.Active })
   status: OrderStatus;
 
-  @Column({default: 'PENDING'})
+  @Column({ default: 'PENDING' })
   paymentStatus: string;
 
-  @ManyToOne(()=>Users,(user)=>user.order)
-  users: Users
+  // Campos movidos de OrderDetails
+  @Column()
+  startDate: Date;
 
-  @OneToOne(()=>OrderDetails,(ordDetails)=>ordDetails.order)
-  @JoinColumn()
-  orderDetails: OrderDetails
+  @Column()
+  endDate: Date;
+
+  @Column('decimal', { precision: 10, scale: 2 })
+  price: number;
+
+  @Column('decimal', { precision: 10, scale: 2 })
+  subtotal: number;
+
+  @ManyToOne(() => Users, (user) => user.order)
+  users: Users;
+
+  @ManyToOne(() => Cars, (car) => car.orders)
+  cars: Cars;
 }
+
+
