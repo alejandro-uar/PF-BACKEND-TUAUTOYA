@@ -8,6 +8,7 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
 
+  // Configuración de Swagger
   const config = new DocumentBuilder()
     .setTitle('Tu-AutoYa-API')
     .setDescription('Tu-AutoYa API description')
@@ -15,23 +16,29 @@ async function bootstrap() {
     .addTag('Tu-AutoYa')
     .build();
 
-  const documentFactory = () => SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('api-docs', app, documentFactory);
+  const document = SwaggerModule.createDocument(app, config);
+  SwaggerModule.setup('api-docs', app, document);
 
-  app.use(cookieParser('asdasdasd'))
-  
-  const whitelist = ['*']
+  // Configuración de cookie-parser
+  app.use(cookieParser('asdasdasd'));
 
+  // Configuración de CORS
   app.enableCors({
-    origin: whitelist,
-    methods: ['GET', 'POST','PUT', 'DELETE'],
-    credentials: true,
-  })
-    
-  app.useGlobalPipes(new ValidationPipe({
-    transform: true,
-    whitelist: true,
-  }))
+    origin: '*', // Permite cualquier origen
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'], // Métodos permitidos
+    allowedHeaders: ['Content-Type', 'Authorization'], // Encabezados permitidos
+    credentials: true, // Permite el envío de cookies
+  });
+
+  // Configuración de ValidationPipe
+  app.useGlobalPipes(
+    new ValidationPipe({
+      transform: true,
+      whitelist: true,
+    }),
+  );
+
+  // Inicio del servidor
   await app.listen(process.env.PORT ?? 3000);
 }
 bootstrap();
