@@ -127,9 +127,9 @@ async addOrder(
     carDetails.map(async (detail) => {
       await this.carRepository
         .createQueryBuilder()
-        .update(Cars) // Asegúrate de que "Car" sea el nombre correcto de tu entidad
-        .set({ status: Status.Inactive }) // Utilizando el enum Status o el valor de cadena correspondiente
-        .where('id = :id', { id: detail.car.id }) // Asegúrate de que detail.car.id tenga el valor correcto
+        .update(Cars) 
+        .set({ status: Status.Inactive }) 
+        .where('id = :id', { id: detail.car.id }) 
         .execute();
     })
   );
