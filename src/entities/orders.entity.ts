@@ -40,7 +40,7 @@ export class Orders {
   users: Users;
 
   @ManyToOne(() => Cars, (car) => car.orders)
-  cars: Cars;
+  cars: Cars[];
 }
 
 
