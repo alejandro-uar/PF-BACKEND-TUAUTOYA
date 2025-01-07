@@ -13,12 +13,6 @@ class CarDetails {
   @IsNotEmpty()
   id:string;
 
-  @ApiProperty({
-    description: 'Número de días de alquiler del coche',
-    example: 5,
-  })
-  @IsNotEmpty()
-  rentalDays: number;
 }
 
 export class CreateOrderDTO{

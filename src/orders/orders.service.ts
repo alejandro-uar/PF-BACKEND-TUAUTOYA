@@ -79,7 +79,7 @@ export class OrdersService {
 
 async addOrder(
   userId: string,
-  cars: { id: string; rentalDays: number }[],
+  cars: { id: string }[],
   startDate: string,
   endDate: string
 ) {
@@ -97,7 +97,9 @@ async addOrder(
       if (car.status !== 'active')
         throw new BadRequestException(`El auto con el ID ${carData.id} no está disponible`);
 
-      const rentalDays = carData.rentalDays;
+      let start = parseInt(startDate.split('-')[2])
+      let end = parseInt(endDate.split('-')[2])
+      let rentalDays = end - start;
       const carTotal = rentalDays * car.pricePerDay;
 
       total += carTotal;
@@ -113,6 +115,10 @@ async addOrder(
   // Crear nueva orden
   const order = new Orders();
   order.orderDate = new Date();
+  order.startDate = new Date(startDate);
+  order.endDate = new Date(endDate);
+  order.price = total;
+  order.subtotal = total;
   order.users = user;
   const newOrder = await this.orderRepository.save(order);
 
@@ -130,6 +136,8 @@ async addOrder(
 
   // Crear preferencia en Mercado Pago
   const paymentPreference = await this.mercadoPagoService.createPreference(total, newOrder.id);
+
+
 
   // Retornar resultado
   return {
