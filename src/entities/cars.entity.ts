@@ -47,6 +47,12 @@ export class Cars {
   @Column({ type: 'enum', enum: ApprovalStatus, default: ApprovalStatus.Pending })
   approvalStatus: ApprovalStatus;
 
+  @Column({type: 'integer', default: 0})
+  discount: number;
+
+  @Column({type: 'boolean', default: false})
+  isDiscount: boolean;
+
   @ManyToOne(() => Users, (user) => user.cars)
   @JoinColumn()
   users: Users;
