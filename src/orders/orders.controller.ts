@@ -16,6 +16,11 @@ export class OrdersController {
     return await this.ordersService.getOrderByIdService(id)
   }
 
+  @Get('user/:userId')
+  async getUserOrders(@Param('userId') userId: string) {
+    return await this.ordersService.getUserOrdersService(userId);
+  }
+
   @Post()
   async addOrder(@Body() createOrderDto: CreateOrderDTO){
     const { userId, cars, startDate, endDate } = createOrderDto;
