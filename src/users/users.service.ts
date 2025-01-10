@@ -15,6 +15,16 @@ export class UsersService {
     return user.map(({password, ...userNoPassword}) => userNoPassword)
   }
 
+  async findUserIdByEmail(email: string) {
+    const user = await this.userRepository.findOneBy({ email });
+
+    if(!user) throw new NotFoundException('Usuario no encontrado!')
+
+    const { id } = user;
+
+    return id;
+  }
+
   async findByIdUserService(id: string){
     const user = await this.userRepository.findOneBy({id: id})
     if(!user) throw new NotFoundException('Usuario no encontrado!')

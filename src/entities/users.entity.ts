@@ -2,6 +2,9 @@ import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import { Cars } from "./cars.entity";
 import { Orders } from "./orders.entity";
 import { Roles } from "src/users/roles.enum";
+import { Message } from "firebase-admin/lib/messaging/messaging-api";
+import { Messages } from "./messages.entity";
+import { Conversation } from "./conversation.entity";
 // import { AccountStatement } from "./accountStatement.entity";
 
 @Entity('users')
@@ -45,6 +48,17 @@ export class Users{
 
   @OneToMany(()=>Orders,(order)=>order.users)
   order: Orders[]
+
+  //Relacion con los mensajes enviados
+  @OneToMany(()=>Messages,(message) => message.sender)
+  sentMessages: Messages[]
+
+
+  @OneToMany(() => Conversation, (conversation) => conversation.memberOne)
+  conversationsAsMemberOne: Conversation[];
+
+  @OneToMany(() => Conversation, (conversation) => conversation.memberTwo)
+  conversationsAsMemberTwo: Conversation[];
 
   // @OneToMany(() => AccountStatement, (AccountStatement) => AccountStatement.user)
   // accountStatements: AccountStatement[];
