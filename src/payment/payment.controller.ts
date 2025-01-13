@@ -33,6 +33,7 @@ export class PaymentsController {
           const orderId = payment.metadata.orderId; // Obtener el ID de la orden asociada
           await this.ordersService.updateOrderStatus(orderId, 'PAID'); // Actualizar el estado de la orden
           // mail de pago aprovado
+          await this.mailerService.mailPaymentConfirm(payment.metadata.email)
         } else {
           console.log('El pago no fue aprobado:', payment.status);
           // mail de pago rechazado

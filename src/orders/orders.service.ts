@@ -4,6 +4,7 @@ import { Status } from 'src/cars/cars.enum';
 import { Cars } from 'src/entities/cars.entity';
 import { Orders, OrderStatus } from 'src/entities/orders.entity';
 import { Users } from 'src/entities/users.entity';
+import { MailerService } from 'src/mailer/mailer.service';
 import { PaymentService } from 'src/payment/payment.service';
 import { Repository } from 'typeorm';
 
@@ -15,6 +16,7 @@ export class OrdersService {
     @InjectRepository(Users) private readonly userRepository: Repository<Users>,
     @InjectRepository(Cars) private readonly carRepository: Repository<Cars>,
     private readonly mercadoPagoService: PaymentService,
+    private readonly mailerService: MailerService,
   ){}
 
   async allOrdersService(){
@@ -134,6 +136,7 @@ async addOrder(
     })
   );
 
+  await this.mailerService.mailOrderConfirmed(order.users.email);
 
   // Crear preferencia en Mercado Pago
   const paymentPreference = await this.mercadoPagoService.createPreference(total, newOrder.id, user.email);

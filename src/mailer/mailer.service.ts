@@ -17,38 +17,38 @@ export class MailerService {
         });
     }
 
-    /**
-     * Enviar Correo del destinatario
-     * @param to Correo del destinatario
-     * @param link Enlace para restablecer la contraseña
-     */
-    async resetPasswordEmail(to: string, link: string){
-        const mailOptions = {
-            from: `"TuaAutoYA <${process.env.SMTP_USER}>`,
-            to,
-            subject: 'Recuperacion de Contraseña',
-            text: `Haz clic en el siguiente enlace para restablecer tu contraseña: ${link}`,
-            html: `<p>Haz clic en el siguiente enlace para restablecer tu contraseña:</p><a href="${link}">Restablecer Contraseña</a>`,
-        }
+    // /**
+    //  * Enviar Correo del destinatario
+    //  * @param to Correo del destinatario
+    //  * @param link Enlace para restablecer la contraseña
+    //  */
+    // async resetPasswordEmail(to: string, link: string){
+    //     const mailOptions = {
+    //         from: `"TuaAutoYA <${process.env.SMTP_USER}>`,
+    //         to,
+    //         subject: 'Recuperacion de Contraseña',
+    //         text: `Haz clic en el siguiente enlace para restablecer tu contraseña: ${link}`,
+    //         html: `<p>Haz clic en el siguiente enlace para restablecer tu contraseña:</p><a href="${link}">Restablecer Contraseña</a>`,
+    //     }
 
-        await this.transporter.sendMail(mailOptions);
-    }
+    //     await this.transporter.sendMail(mailOptions);
+    // }
 
-    /**
-     * Enviar correo de confirmacion.
-     * @param to Correo del destinatario
-     * @param type Tipo de confirmacion (registero, orden, etc.) 
-     */
-    async mailConfirm(to: string, type: string){
-        const mailOptions = {
-            from: `"TuAutoYA" <${process.env.SMTP_USER}>`,
-            to,
-            subject: `Confirmacion de ${type}`,
-            text: `Tu ${type} ha sido confirmada!</p>`,
-        };
+    // /**
+    //  * Enviar correo de confirmacion.
+    //  * @param to Correo del destinatario
+    //  * @param type Tipo de confirmacion (registero, orden, etc.) 
+    //  */
+    // async mailConfirm(to: string, type: string){
+    //     const mailOptions = {
+    //         from: `"TuAutoYA" <${process.env.SMTP_USER}>`,
+    //         to,
+    //         subject: `Confirmacion de ${type}`,
+    //         text: `Tu ${type} ha sido confirmada!</p>`,
+    //     };
 
-        await this.transporter.sendMail(mailOptions);
-    }
+    //     await this.transporter.sendMail(mailOptions);
+    // }
 
     /**
      * Enviar correo de notificaion de cuenta bloqueada.
@@ -95,6 +95,21 @@ export class MailerService {
     }
 
     /**
+     * Enviar correo de notificacion de pago confirmado.
+     * @param to Correo del destinatario
+     */
+    async mailPaymentConfirm(to: string) {
+        const mailOptions = {
+            from: `"TuAutoYA" <${process.env.SMTP_USER}>`,
+            to,
+            subject: `Pago Confirmado`,
+            text: `Tu pago ha sido confirmado.`,
+            html: `<p>Tu pago ha sido confirmado.</p>`,
+        };
+        await this.transporter.sendMail(mailOptions);
+    }
+
+    /**
    * Enviar correo de cancelación de pago.
    * @param to Correo del destinatario
    */
@@ -110,19 +125,34 @@ export class MailerService {
     await this.transporter.sendMail(mailOptions);
   }
 
-/**
- * Enviar una notificación básica de prueba.
- * @param to Correo del destinatario
- */
-async sendTestNotification(to: string) {
-    const mailOptions = {
-      from: `"TuAutoYA" <${process.env.SMTP_USER}>`,
-      to,
-      subject: 'Correo de prueba',
-      text: 'Este es un correo de prueba desde el sistema TuAutoYA.',
-      html: `<p>Este es un correo de prueba desde el sistema <strong>TuAutoYA</strong>.</p>`,
-    };
+// /**
+//  * Enviar una notificación básica de prueba.
+//  * @param to Correo del destinatario
+//  */
+// async sendTestNotification(to: string) {
+//     const mailOptions = {
+//       from: `"TuAutoYA" <${process.env.SMTP_USER}>`,
+//       to,
+//       subject: 'Correo de prueba',
+//       text: 'Este es un correo de prueba desde el sistema TuAutoYA.',
+//       html: `<p>Este es un correo de prueba desde el sistema <strong>TuAutoYA</strong>.</p>`,
+//     };
   
-    await this.transporter.sendMail(mailOptions);
+//     await this.transporter.sendMail(mailOptions);
+//     }
+
+    /**
+     * Enviar correo de notificacion de orden de reserva confirmada.
+     * @param to Correo del destinatario
+     */
+    async mailOrderConfirmed(to: string) {
+        const mailOptions = {
+            from: `"TuAutoYA" <${process.env.SMTP_USER}>`,
+            to,
+            subject: `Order de reserva confirmada`,
+            text: `Tu orden de reserva ha sido confirmada.`,
+            html: `<p>Tu prden de reserva ha sido confirmada.</p>`,
+        };
+        await this.transporter.sendMail(mailOptions);
     }
 }
