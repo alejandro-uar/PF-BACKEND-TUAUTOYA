@@ -57,6 +57,12 @@ export class CreateCarDto {
   @IsOptional()
   approvalStatus: ApprovalStatus;
 
+  @IsOptional()
+  discount: number
+
+  @IsOptional()
+  isDiscount: boolean;
+
   @IsUUID()
   userId: string;
 }

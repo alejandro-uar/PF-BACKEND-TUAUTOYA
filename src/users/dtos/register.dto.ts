@@ -70,6 +70,13 @@ export class CreateUserDTO {
   city: string;
 
   @ApiProperty({
+    description: 'Dirección (opcional)',
+    example: 'Av. San Martín 123',
+    required: false
+  })
+  address: string; 
+
+  @ApiProperty({
     description: 'Rol del usuario (opcional)',
     example: 'customer|owner',
     enum: Roles,

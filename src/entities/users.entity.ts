@@ -27,6 +27,9 @@ export class Users{
   @Column({type:"varchar",length:100,nullable: true})
   city: string
 
+  @Column('text', { nullable: true })
+  address: string
+
   @Column({
     type: 'enum',
     enum: Roles,
