@@ -1,13 +1,16 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Users } from 'src/entities/users.entity';
+import { MailerService } from 'src/mailer/mailer.service';
 import { Repository } from 'typeorm';
 
 @Injectable()
 export class UsersService {
 
   constructor(
-    @InjectRepository(Users) private readonly userRepository: Repository<Users>
+    @InjectRepository(Users) 
+    private readonly userRepository: Repository<Users>,
+    private readonly mailerService: MailerService,
   ){}
 
   async findUserService(){
@@ -25,6 +28,7 @@ export class UsersService {
     const user = await this.userRepository.findOneBy({email: data.email})
     if(user) throw new NotFoundException('Email ya registrado')
     const newUser = await this.userRepository.save(data);
+    await this.mailerService.mailWelcome(newUser.email, newUser.name)
     const {password, ...userNoPassword} = newUser;
     return userNoPassword;
   }
@@ -49,6 +53,7 @@ export class UsersService {
     if(!user) throw new NotFoundException('Usuario no encontrado');
 
     user.isEnabled = false;
+    await this.mailerService.mailBanUser('Incumplimiento de normas', user.email)
     return this.userRepository.save(user);
   }
 

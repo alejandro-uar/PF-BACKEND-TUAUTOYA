@@ -175,8 +175,9 @@ async addOrder(
     })
   );
 
+
   // Crear preferencia en Mercado Pago
-  const paymentPreference = await this.mercadoPagoService.createPreference(total, newOrder.id);
+  const paymentPreference = await this.mercadoPagoService.createPreference(total, newOrder.id, user.email);
 
 
 

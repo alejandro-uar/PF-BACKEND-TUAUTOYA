@@ -19,7 +19,7 @@ export class PaymentService {
         this.preference = new Preference(this.client)
     }
 
-  async createPreference(amount: number, orderId: string) {
+  async createPreference(amount: number, orderId: string, email: string) {
     const items = [
       {
         id: 'alquiler-auto',
@@ -40,6 +40,7 @@ export class PaymentService {
           notification_url: 'https://pf-backend-tuautoya.onrender.com/payments/webhook',
           metadata: {
             orderId, // Asociar la orden al pago.
+            email,
           },
         },
       });
