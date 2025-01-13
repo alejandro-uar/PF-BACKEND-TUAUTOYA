@@ -8,12 +8,14 @@ import {
 } from '@nestjs/common';
 import { OrdersService } from '../orders/orders.service';
 import { PaymentService } from './payment.service';
+import { MailerService } from 'src/mailer/mailer.service';
 
 @Controller('payments')
 export class PaymentsController {
   constructor(
     private readonly mercadoPagoService: PaymentService,
     private readonly ordersService: OrdersService, // Para actualizar el estado de la orden
+    private readonly mailerService: MailerService,
   ) {}
 
 
@@ -30,8 +32,11 @@ export class PaymentsController {
         if (payment.status === 'approved') {
           const orderId = payment.metadata.orderId; // Obtener el ID de la orden asociada
           await this.ordersService.updateOrderStatus(orderId, 'PAID'); // Actualizar el estado de la orden
+          // mail de pago aprovado
         } else {
           console.log('El pago no fue aprobado:', payment.status);
+          // mail de pago rechazado
+          await this.mailerService.mailPaymentCancel(payment.metadata.email)
         }
       }
       return { status: 'OK' }; // Responder a Mercado Pago con un estado exitoso
