@@ -191,48 +191,6 @@ async addOrder(
   };
 }
 
-async getUserOrdersService(userId: string) {
-  const user = await this.userRepository.findOne({ where: { id: userId } });
-  if (!user) {
-    throw new NotFoundException('User not found');
-  }
-
-  const orders = await this.orderRepository
-    .createQueryBuilder('order')
-    .leftJoinAndSelect('order.cars', 'car')
-    .leftJoinAndSelect('car.users', 'carOwner')
-    .where('order.users = :userId', { userId })
-    .orderBy('order.orderDate', 'DESC')
-    .getMany();
-
-  if (orders.length === 0) {
-    return { message: 'No orders found for this user' };
-  }
-
-  const userOrders = orders.map(order => ({
-    id: order.id,
-    orderDate: order.orderDate,
-    status: order.status,
-    paymentStatus: order.paymentStatus,
-    startDate: order.startDate,
-    endDate: order.endDate,
-    price: order.price,
-    subtotal: order.subtotal,
-    cars: order.cars
-  }));
-
-  return {
-    user: {
-      id: user.id,
-      name: user.name,
-      email: user.email,
-      phone: user.phone,
-      city: user.city
-    },
-    orders: userOrders
-  };
-}
-
 async getTotalAndWeeklySummary() {
   const totalAccumulated = await this.orderRepository
     .createQueryBuilder('order')
