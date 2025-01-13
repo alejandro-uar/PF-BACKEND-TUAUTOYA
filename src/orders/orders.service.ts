@@ -150,6 +150,123 @@ async addOrder(
   };
 }
 
+async getUserOrdersService(userId: string) {
+  const user = await this.userRepository.findOne({ where: { id: userId } });
+  if (!user) {
+    throw new NotFoundException('User not found');
+  }
 
+  const orders = await this.orderRepository
+    .createQueryBuilder('order')
+    .leftJoinAndSelect('order.cars', 'car')
+    .leftJoinAndSelect('car.users', 'carOwner')
+    .where('order.users = :userId', { userId })
+    .orderBy('order.orderDate', 'DESC')
+    .getMany();
+
+  if (orders.length === 0) {
+    return { message: 'No orders found for this user' };
+  }
+
+  const userOrders = orders.map(order => ({
+    id: order.id,
+    orderDate: order.orderDate,
+    status: order.status,
+    paymentStatus: order.paymentStatus,
+    startDate: order.startDate,
+    endDate: order.endDate,
+    price: order.price,
+    subtotal: order.subtotal,
+    cars: order.cars
+  }));
+
+  return {
+    user: {
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      phone: user.phone,
+      city: user.city
+    },
+    orders: userOrders
+  };
+}
+
+async getTotalAndWeeklySummary() {
+  const totalAccumulated = await this.orderRepository
+    .createQueryBuilder('order')
+    .select('SUM(order.price)', 'total')
+    .getRawOne();
+
+  const weeklySummary = await this.orderRepository
+    .createQueryBuilder('order')
+    .select([
+      "DATE_TRUNC('week', order.orderDate) AS week",
+      'SUM(order.price) AS total',
+      'COUNT(order.id) AS orderCount'
+    ])
+    .groupBy("DATE_TRUNC('week', order.orderDate)")
+    .orderBy("DATE_TRUNC('week', order.orderDate)", 'DESC')
+    .getRawMany();
+
+  return {
+    totalAccumulated: Number(totalAccumulated.total) || 0,
+    weeklySummary: weeklySummary.map(summary => ({
+      week: summary.week,
+      total: Number(summary.total) || 0,
+      orderCount: Number(summary.orderCount) || 0
+    }))
+  };
+}
+
+async getUserEarningsSummary(userId: string, year: number, month: number) {
+  const user = await this.userRepository.findOne({ where: { id: userId } });
+  if(!user) {
+    throw new NotFoundException('User not found');
+  }
+
+  const startDate = new Date(year, month - 1, 1);
+  const endDate = new Date(year, month, 0);
+
+  const totalEarnings = await this.orderRepository
+  .createQueryBuilder('order')
+  .leftJoin('order.cars', 'car')
+  .where('car.users = :userId', { userId })
+  .andWhere('order.orderDate >= :startDate', { startDate })
+  .andWhere('order.orderDate <= :endDate', { endDate })
+  .select('SUM(order.orice)', 'total')
+  .getRawOne();
+
+  const weeklySummary = await this.orderRepository
+  .createQueryBuilder('order')
+  .leftJoin('order.cars', 'car')
+  .where('car.users = :userID', { userId })
+  .andWhere('order.orderDate >= :startDate', { startDate })
+  .andWhere('order.orderDate <= :endDate', { endDate })
+  .select([
+    "DATE_TRUNC('week', order.orderDate) AS week",
+    'SUM(order.price) AS total',
+    'COUNT(order.id) AS orderCount'
+  ])
+  .groupBy("date_trunc('week', order.orderDate)")
+  .orderBy("date_trunc('week', order.orderDate)", 'ASC')
+  .getRawMany();
+
+  return {
+    user: {
+      id: user.id,
+      name: user.name,
+      email: user.email
+    },
+    year,
+    month,
+    totalEarnings: Number(totalEarnings.total) || 0,
+    weeklySummary: weeklySummary.map(summary => ({
+      week: summary.week,
+      total: Number(summary.total) || 0,
+      orderCount: Number(summary.orderCount) || 0
+    }))
+  };
+}
 
 }

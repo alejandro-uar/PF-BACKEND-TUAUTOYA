@@ -11,6 +11,11 @@ export class OrdersController {
     return await this.ordersService.allOrdersService()
   }
 
+  @Get('user/:userId')
+  async getUserOrders(@Param('userId') userId: string) {
+    return await this.ordersService.getUserOrdersService(userId);
+  }
+
   @Get(':id')
   async findOrderById(@Param('id') id:string){
     return await this.ordersService.getOrderByIdService(id)
@@ -33,5 +38,26 @@ export class OrdersController {
   @Delete('id/cancel')
   async cancelOrder(@Param('id') orderId:string){
     return await this.ordersService.cancelOrder(orderId);
+  }
+
+  @Get('summary/general')
+  async getOrdersSummary() {
+    return await this.ordersService.getTotalAndWeeklySummary();
+  }
+
+  @Get('user/:userId/earnings')
+  async getUserEarnings(
+    @Param('userId') userId: string,
+    @Param('year') year: string,
+    @Param('month') month: string
+  ) {
+    const yearNum = parseInt(year);
+    const monthNum = parseInt(month);
+
+    if (isNaN(yearNum) || isNaN(monthNum) || monthNum < 1 || monthNum > 12) {
+      throw new Error('Invalid year or month');
+    }
+
+    return await this.ordersService.getUserEarningsSummary(userId, yearNum, monthNum);
   }
 }
