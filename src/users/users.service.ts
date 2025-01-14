@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Users } from 'src/entities/users.entity';
 import { MailerService } from 'src/mailer/mailer.service';
 import { Repository } from 'typeorm';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UsersService {
@@ -25,11 +26,13 @@ export class UsersService {
   }
 
   async createUserService(data: Partial<Users>){
-    const user = await this.userRepository.findOneBy({email: data.email})
-    if(user) throw new NotFoundException('Email ya registrado')
-    const newUser = await this.userRepository.save(data);
+    const { password, ...otherData } =data;
+    const user = await this.userRepository.findOneBy({ email: data.email})
+    if(user) throw new NotFoundException('Email ya registrado');
+    const hashedPassword = await bcrypt.hash(password, 10)
+    const newUser = await this.userRepository.save({ ...otherData, password: hashedPassword });
     await this.mailerService.mailWelcome(newUser.email, newUser.name)
-    const {password, ...userNoPassword} = newUser;
+    const { password: _, ...userNoPassword } = newUser;
     return userNoPassword;
   }
 
