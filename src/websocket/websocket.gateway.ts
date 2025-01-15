@@ -8,7 +8,7 @@ import { Conversation } from 'src/entities/conversation.entity';
 
 @WebSocketGateway({
   cors: {
-    origin: 'http://localhost:3000',
+    origin: ['https://tuautoya.vercel.app','http://localhost:3000'],
     credentials: true
   },
 })

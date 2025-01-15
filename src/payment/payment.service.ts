@@ -34,10 +34,10 @@ export class PaymentService {
         body: {
           items,
           back_urls: {
-            success: 'http://localhost:3000/payments/success',
+            success: 'https://tuautoya.vercel.app/dashboard/reservas-pendientes',
             failure: 'http://localhost:3000/payments/failure',
           },
-          notification_url: 'https://pf-backend-tuautoya.onrender.com/payments/webhook',
+          notification_url: 'https://pf-backend-tuautoya.onrender.com',
           metadata: {
             orderId, // Asociar la orden al pago.
             email,
