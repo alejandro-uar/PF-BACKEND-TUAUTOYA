@@ -1,4 +1,4 @@
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, JoinColumn, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import { Cars } from "./cars.entity";
 import { Orders } from "./orders.entity";
 import { Roles } from "src/users/roles.enum";
@@ -47,6 +47,7 @@ export class Users{
   cars: Cars[]
 
   @OneToMany(()=>Orders,(order)=>order.users)
+  @JoinColumn()
   order: Orders[]
 
   //Relacion con los mensajes enviados
