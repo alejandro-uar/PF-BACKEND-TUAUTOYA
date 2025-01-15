@@ -1,4 +1,4 @@
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 import { Users } from "./users.entity";
 import { Cars } from "./cars.entity";
 
@@ -40,6 +40,7 @@ export class Orders {
   users: Users;
 
   @ManyToOne(() => Cars, (car) => car.orders)
+  @JoinColumn()
   cars: Cars[];
 }
 
