@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Post, Put } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put, Query } from '@nestjs/common';
 import { OrdersService } from './orders.service';
 import { CreateOrderDTO } from './dtos/order.dto';
 
@@ -48,8 +48,8 @@ export class OrdersController {
   @Get('user/:userId/earnings')
   async getUserEarnings(
     @Param('userId') userId: string,
-    @Param('year') year: string,
-    @Param('month') month: string
+    @Query('year') year: string,
+    @Query('month') month: string
   ) {
     const yearNum = parseInt(year);
     const monthNum = parseInt(month);
