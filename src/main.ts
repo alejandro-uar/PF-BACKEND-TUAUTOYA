@@ -24,7 +24,7 @@ async function bootstrap() {
 
   // Configuración de CORS
   app.enableCors({
-    origin: 'https://tuautoya.vercel.app', // Permite cualquier origen
+    origin: ['https://tuautoya.vercel.app', 'http://localhost:3000'], // Permite cualquier origen
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'], // Métodos permitidos
     allowedHeaders: ['Content-Type', 'Authorization'], // Encabezados permitidos
     credentials: true, // Permite el envío de cookies
@@ -39,6 +39,6 @@ async function bootstrap() {
   );
 
   // Inicio del servidor
-  await app.listen(process.env.PORT ?? 3000);
+  await app.listen(process.env.PORT || 3000);
 }
 bootstrap();

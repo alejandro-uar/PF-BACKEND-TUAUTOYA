@@ -5,8 +5,12 @@ import { UsersModule } from './users/users.module';
 import { OrdersModule } from './orders/orders.module';
 import { CarsModule } from './cars/cars.module';
 import { AuthModule } from './auth/auth.module';
+import { MessagesModule } from './messages/messages.module';
+import { WebsocketModule } from './websocket/websocket.module';
+import { ConversationModule } from './conversation/conversation.module';
 import typeormConfig from './config/typeorm.config';
 import firebaseConfig from './config/firebase.config';
+import { MailerModule } from './mailer/mailer.module';
 
 @Module({
   imports: [
@@ -21,6 +25,9 @@ import firebaseConfig from './config/firebase.config';
     OrdersModule,
     CarsModule,
     AuthModule,
+    MessagesModule,
+    WebsocketModule,
+    ConversationModule,
   ],
   controllers: [],
   providers: [],

@@ -4,10 +4,12 @@ import { UsersController } from './users.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Users } from 'src/entities/users.entity';
 import { MailerModule } from 'src/mailer/mailer.module';
+import { FirebaseService } from 'src/firebase/firebase-admin.service';
+
 
 @Module({
   imports: [TypeOrmModule.forFeature([Users]), MailerModule],
   controllers: [UsersController],
-  providers: [UsersService],
+  providers: [UsersService, FirebaseService],
 })
 export class UsersModule {}
