@@ -62,6 +62,17 @@ export class CarsService {
         return car            
     }
 
+    async getCarsByProviderService(userId: string) {
+      const user = await this.userRepository.findOneBy({ id: userId });
+      if(!user) throw new NotFoundException('Usuario no encontrado');
+
+      const cars = await this.carsRepository.find({
+        where: { users: { id: userId } },
+        relations: ['users'],
+      });
+      return cars;
+    }
+
     //Create car service
     async createCarsService(dataCars: CreateCarDto){
         const user = await this.userRepository.findOneBy({id: dataCars.userId})
