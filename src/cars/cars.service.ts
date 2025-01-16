@@ -64,14 +64,15 @@ export class CarsService {
 
     async getCarsByProviderService(userId: string) {
       const user = await this.userRepository.findOneBy({ id: userId });
-      if(!user) throw new NotFoundException('Usuario no encontrado');
+      if (!user) throw new NotFoundException('Usuario no encontrado');
 
       const cars = await this.carsRepository.find({
-        where: { users: { id: userId } },
-        relations: ['users'],
+          where: { users: { id: userId } },
+          relations: ['users'],
       });
+
       return cars;
-    }
+  }
 
     //Create car service
     async createCarsService(dataCars: CreateCarDto){
@@ -92,14 +93,10 @@ export class CarsService {
             brakes: dataCars.brakes,
             rating: dataCars.rating,
             status: dataCars.status,
+            isDiscount: dataCars.isDiscount,
+            discount: dataCars.discount,
             users: user
         })
-
-        // const newCar = this.carsRepository.create({
-        //   ...dataCars,
-        //   users: user,
-        // });
-
         return await this.carsRepository.save(newCar);
     }
 

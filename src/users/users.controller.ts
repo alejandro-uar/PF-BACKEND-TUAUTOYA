@@ -8,7 +8,6 @@ export class UsersController {
   constructor(private readonly usersService: UsersService) {}
     
     @Get()
-    @UseGuards(FirebaseAuthGuard)
     async findUser(){
       return await this.usersService.findUserService()
     }
