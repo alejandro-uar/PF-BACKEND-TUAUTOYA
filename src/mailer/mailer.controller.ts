@@ -1,4 +1,5 @@
 import { Controller, Post, Body } from '@nestjs/common';
+import { ApiBody, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { MailerService } from 'src/mailer/mailer.service';
 
 @Controller('mailer')
@@ -14,6 +15,19 @@ export class MailerController {
   //   return { message: 'Correo de restablecimiento enviado' };
   // }
 
+  @ApiOperation({ summary: 'Enviar correo de bienvenida a un nuevo usuario' })
+  @ApiBody({
+    description: 'Datos necesarios para enviar el correo de bienvenida',
+    schema: {
+      type: 'object',
+      properties: {
+        to: { type: 'string', example: 'user@example.com' },
+        userName: { type: 'string', example: 'John Doe' },
+      },
+    },
+  })
+  @ApiResponse({ status: 200, description: 'Correo de bienvenida enviado correctamente' })
+  @ApiResponse({ status: 400, description: 'Datos inválidos' })
   @Post('welcome')
   async sendWelcomeEmail(
     @Body('to') to: string,

@@ -42,7 +42,7 @@ export class UsersService {
     const user = await this.userRepository.findOne({
       where: { email: data.email },
     });
-    if (!user) throw new NotFoundException('Email invalido');
+    if (!user) throw new NotFoundException('Usuario no encontrado');
     await this.userRepository.update(user.id, { ...data });
     return this.userRepository.findOneBy({ id: user.id });
   }

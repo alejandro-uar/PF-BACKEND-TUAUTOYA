@@ -11,8 +11,9 @@ async function bootstrap() {
   // Configuración de Swagger
   const config = new DocumentBuilder()
     .setTitle('Tu-AutoYa-API')
-    .setDescription('Tu-AutoYa API description')
+    .setDescription('Servicio de rentabilidad')
     .setVersion('1.0')
+    .addBearerAuth({type: 'http', scheme:'bearer', bearerFormat:'JWT'},'FirebaseToken')
     .addTag('Tu-AutoYa')
     .build();
 

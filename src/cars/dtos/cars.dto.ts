@@ -3,7 +3,6 @@ import { ApprovalStatus, Fuels, Status, Transmissions } from "../cars.enum";
 import { ApiProperty } from "@nestjs/swagger";
 
 export class CreateCarDto {
-
   @ApiProperty({ example: 'Toyota', description: 'Marca de auto', maxLength: 100 })
   @IsString()
   @IsNotEmpty()
