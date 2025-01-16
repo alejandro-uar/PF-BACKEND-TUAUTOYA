@@ -133,20 +133,49 @@ async addOrder(
   let total = 0;
 
   // Validar y procesar los autos
+  // const carDetails = await Promise.all(
+  //   cars.map(async (carData) => {
+  //     const car = await this.carRepository.findOne({ where: { id: carData.id } });
+  //     if (!car) throw new NotFoundException(`El auto con el ID ${carData.id} no fue encontrado.`);
+  //     if (car.status !== 'active')
+  //       throw new BadRequestException(`El auto con el ID ${carData.id} no está disponible`);
+
+  //     let start = parseInt(startDate.split('-')[2])
+  //     let end = parseInt(endDate.split('-')[2])
+  //     let rentalDays = end - start;
+  //     const carTotal = rentalDays * car.pricePerDay;
+
+  //     total += carTotal;
+
+  //     return {
+  //       car,
+  //       rentalDays,
+  //       carTotal,
+  //     };
+  //   })
+  // );
+
+  // Incorporacion del descuento
   const carDetails = await Promise.all(
     cars.map(async (carData) => {
       const car = await this.carRepository.findOne({ where: { id: carData.id } });
       if (!car) throw new NotFoundException(`El auto con el ID ${carData.id} no fue encontrado.`);
       if (car.status !== 'active')
         throw new BadRequestException(`El auto con el ID ${carData.id} no está disponible`);
-
-      let start = parseInt(startDate.split('-')[2])
-      let end = parseInt(endDate.split('-')[2])
-      let rentalDays = end - start;
-      const carTotal = rentalDays * car.pricePerDay;
-
+  
+      const start = parseInt(startDate.split('-')[2]);
+      const end = parseInt(endDate.split('-')[2]);
+      const rentalDays = end - start;
+      let carTotal = rentalDays * car.pricePerDay;
+  
+      // Aplicar descuento si es necesario
+      if (car.isDiscount && car.discount > 0) {
+        const discountAmount = (carTotal * car.discount) / 100;
+        carTotal -= discountAmount;
+      }
+  
       total += carTotal;
-
+  
       return {
         car,
         rentalDays,
@@ -154,6 +183,7 @@ async addOrder(
       };
     })
   );
+
 
   // Crear nueva orden
   const order = new Orders();
