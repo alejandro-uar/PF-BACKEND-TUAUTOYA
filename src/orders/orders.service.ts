@@ -51,6 +51,7 @@ async getUserOrdersService(userId: string) {
       .leftJoinAndSelect('order.cars', 'car')
       .leftJoinAndSelect('car.users', 'carOwner')
       .where('order.users = :userId', { userId })
+      .orWhere('carOwner.id = :userId', { userId })
       .orderBy('order.orderDate', 'DESC')
       .getMany();
 
@@ -133,49 +134,20 @@ async addOrder(
   let total = 0;
 
   // Validar y procesar los autos
-  // const carDetails = await Promise.all(
-  //   cars.map(async (carData) => {
-  //     const car = await this.carRepository.findOne({ where: { id: carData.id } });
-  //     if (!car) throw new NotFoundException(`El auto con el ID ${carData.id} no fue encontrado.`);
-  //     if (car.status !== 'active')
-  //       throw new BadRequestException(`El auto con el ID ${carData.id} no está disponible`);
-
-  //     let start = parseInt(startDate.split('-')[2])
-  //     let end = parseInt(endDate.split('-')[2])
-  //     let rentalDays = end - start;
-  //     const carTotal = rentalDays * car.pricePerDay;
-
-  //     total += carTotal;
-
-  //     return {
-  //       car,
-  //       rentalDays,
-  //       carTotal,
-  //     };
-  //   })
-  // );
-
-  // Incorporacion del descuento
   const carDetails = await Promise.all(
     cars.map(async (carData) => {
       const car = await this.carRepository.findOne({ where: { id: carData.id } });
       if (!car) throw new NotFoundException(`El auto con el ID ${carData.id} no fue encontrado.`);
       if (car.status !== 'active')
         throw new BadRequestException(`El auto con el ID ${carData.id} no está disponible`);
-  
-      const start = parseInt(startDate.split('-')[2]);
-      const end = parseInt(endDate.split('-')[2]);
-      const rentalDays = end - start;
-      let carTotal = rentalDays * car.pricePerDay;
-  
-      // Aplicar descuento si es necesario
-      if (car.isDiscount && car.discount > 0) {
-        const discountAmount = (carTotal * car.discount) / 100;
-        carTotal -= discountAmount;
-      }
-  
+
+      let start = parseInt(startDate.split('-')[2])
+      let end = parseInt(endDate.split('-')[2])
+      let rentalDays = end - start;
+      const carTotal = rentalDays * car.pricePerDay;
+
       total += carTotal;
-  
+
       return {
         car,
         rentalDays,
@@ -183,7 +155,6 @@ async addOrder(
       };
     })
   );
-
 
   // Crear nueva orden
   const order = new Orders();
@@ -250,7 +221,7 @@ async getTotalAndWeeklySummary() {
 
 async getUserEarningsSummary(userId: string, year: number, month: number) {
   const user = await this.userRepository.findOne({ where: { id: userId } });
-  if(!user) {
+  if (!user) {
     throw new NotFoundException('User not found');
   }
 
@@ -258,28 +229,30 @@ async getUserEarningsSummary(userId: string, year: number, month: number) {
   const endDate = new Date(year, month, 0);
 
   const totalEarnings = await this.orderRepository
-  .createQueryBuilder('order')
-  .leftJoin('order.cars', 'car')
-  .where('car.users = :userId', { userId })
-  .andWhere('order.orderDate >= :startDate', { startDate })
-  .andWhere('order.orderDate <= :endDate', { endDate })
-  .select('SUM(order.orice)', 'total')
-  .getRawOne();
+    .createQueryBuilder('order')
+    .leftJoin('order.cars', 'car')
+    .leftJoin('car.users', 'user')
+    .where('user.id = :userId', { userId })
+    .andWhere('order.orderDate >= :startDate', { startDate })
+    .andWhere('order.orderDate <= :endDate', { endDate })
+    .select('SUM(order.price)', 'total')
+    .getRawOne();
 
   const weeklySummary = await this.orderRepository
-  .createQueryBuilder('order')
-  .leftJoin('order.cars', 'car')
-  .where('car.users = :userID', { userId })
-  .andWhere('order.orderDate >= :startDate', { startDate })
-  .andWhere('order.orderDate <= :endDate', { endDate })
-  .select([
-    "DATE_TRUNC('week', order.orderDate) AS week",
-    'SUM(order.price) AS total',
-    'COUNT(order.id) AS orderCount'
-  ])
-  .groupBy("date_trunc('week', order.orderDate)")
-  .orderBy("date_trunc('week', order.orderDate)", 'ASC')
-  .getRawMany();
+    .createQueryBuilder('order')
+    .leftJoin('order.cars', 'car')
+    .leftJoin('car.users', 'user')
+    .where('user.id = :userId', { userId })
+    .andWhere('order.orderDate >= :startDate', { startDate })
+    .andWhere('order.orderDate <= :endDate', { endDate })
+    .select([
+      "DATE_TRUNC('week', order.orderDate) AS week",
+      'SUM(order.price) AS total',
+      'COUNT(order.id) AS orderCount'
+    ])
+    .groupBy("DATE_TRUNC('week', order.orderDate)")
+    .orderBy("DATE_TRUNC('week', order.orderDate)", 'ASC')
+    .getRawMany();
 
   return {
     user: {
